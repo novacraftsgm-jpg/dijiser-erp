@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijiser - Kurumsal İş Süreçleri Platformu</title>
+    <meta name="description" content="Dijiser ile işletmenizi dijitalleştirin. Tedarik, Lojistik, Servis, Depo ve İnşaat yönetimi tek platformda.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/static/dijiser-logo.png">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a25;
+            --bg-gradient: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6a6a7a;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f4d160;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-rose: #f43f5e;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(212, 175, 55, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow-glow: 0 0 60px rgba(212, 175, 55, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-dark);
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+        }
+
+        /* Premium Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { border-color: rgba(212, 175, 55, 0.3); }
+            50% { border-color: rgba(212, 175, 55, 0.6); }
+        }
+
+        .animate-fade-in { animation: fadeIn 1s ease forwards; }
+        .animate-fade-up { animation: fadeInUp 1s ease forwards; }
+        .animate-fade-down { animation: fadeInDown 1s ease forwards; }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo-custom {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon-custom {
+            width: 52px;
+            height: 52px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon-custom svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-text-img {
+            height: 36px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-light));
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* Login Dropdown */
+        .login-dropdown {
+            position: relative;
+        }
+
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-arrow {
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .login-dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .login-menu {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            min-width: 300px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .login-dropdown:hover .login-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .login-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 24px;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .login-option:last-child {
+            border-bottom: none;
+        }
+
+        .login-option:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .login-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .login-option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            flex-shrink: 0;
+        }
+
+        .login-option-icon.tedarik-icon {
+            background: linear-gradient(135deg, var(--accent-purple), #a855f7);
+        }
+
+        .login-option-icon.lojistik-icon {
+            background: linear-gradient(135deg, var(--accent-blue), #60a5fa);
+        }
+
+        .login-option-icon.servis-icon {
+            background: linear-gradient(135deg, var(--accent-emerald), #34d399);
+        }
+
+        .login-option-icon.depo-icon {
+            background: linear-gradient(135deg, var(--accent-orange), #fbbf24);
+        }
+
+        .login-option-icon.insaat-icon {
+            background: linear-gradient(135deg, var(--accent-rose), #fb7185);
+        }
+
+        .login-option-icon svg {
+            width: 100%;
+            height: 100%;
+            color: white;
+        }
+
+        .login-option-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .login-option-text strong {
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .login-option-text span {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .coming-badge {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            color: var(--bg-dark);
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-left: auto;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            color: var(--bg-dark);
+            border: none;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--bg-dark);
+            font-weight: 700;
+        }
+
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 140px 0 100px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .hero-content h1 {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 28px;
+            letter-spacing: -1px;
+        }
+
+        .hero-content h1 span {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.8;
+            max-width: 520px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 50px;
+        }
+
+        .hero-stat {
+            text-align: left;
+        }
+
+        .hero-stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .hero-stat-value span {
+            color: var(--accent-gold);
+        }
+
+        .hero-stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: fadeIn 1.2s ease 0.3s backwards;
+        }
+
+        .hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+
+        .hero-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-card-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .hero-card-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .hero-card-dot.red { background: #ff5f56; }
+        .hero-card-dot.yellow { background: #ffbd2e; }
+        .hero-card-dot.green { background: #27ca40; }
+
+        .hero-card-title {
+            margin-left: auto;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .hero-card-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .hero-stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .hero-stat-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-4px);
+        }
+
+        .hero-stat-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .hero-stat-card .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-chart {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            height: 140px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            border-radius: 8px 8px 4px 4px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .chart-bar:nth-child(1) { height: 45%; background: linear-gradient(180deg, var(--accent-purple), rgba(139, 92, 246, 0.3)); }
+        .chart-bar:nth-child(2) { height: 70%; background: linear-gradient(180deg, var(--accent-blue), rgba(59, 130, 246, 0.3)); }
+        .chart-bar:nth-child(3) { height: 55%; background: linear-gradient(180deg, var(--accent-gold), rgba(212, 175, 55, 0.3)); }
+        .chart-bar:nth-child(4) { height: 85%; background: linear-gradient(180deg, var(--accent-emerald), rgba(16, 185, 129, 0.3)); }
+        .chart-bar:nth-child(5) { height: 60%; background: linear-gradient(180deg, var(--accent-rose), rgba(244, 63, 94, 0.3)); }
+        .chart-bar:nth-child(6) { height: 75%; background: linear-gradient(180deg, var(--accent-orange), rgba(245, 158, 11, 0.3)); }
+
+        .chart-bar:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.05);
+        }
+
+        .hero-floating {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-floating-1 {
+            top: -20px;
+            right: -40px;
+            animation-delay: 0s;
+        }
+
+        .hero-floating-2 {
+            bottom: 40px;
+            left: -60px;
+            animation-delay: 2s;
+        }
+
+        .hero-floating-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .hero-floating-icon.success {
+            background: linear-gradient(135deg, var(--accent-emerald), #34d399);
+        }
+
+        .hero-floating-icon.alert {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+        }
+
+        .hero-floating-text {
+            font-size: 13px;
+        }
+
+        .hero-floating-text strong {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .hero-floating-text span {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Products Section */
+        .products {
+            padding: 140px 0;
+            position: relative;
+        }
+
+        .products::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--accent-gold);
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .section-header h2 {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .section-header h2 span {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .product-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .product-tab {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 28px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 200px;
+        }
+
+        .product-tab:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-tab.active {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border-color: transparent;
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .product-tab .tab-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+
+        .product-tab.active .tab-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: transparent;
+        }
+
+        .product-tab .tab-text h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 4px;
+            color: var(--text-primary);
+        }
+
+        .product-tab.active .tab-text h4 {
+            color: var(--bg-dark);
+        }
+
+        .product-tab .tab-text span {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .product-tab.active .tab-text span {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .product-tab .coming-soon {
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+            font-size: 9px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-left: auto;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-tab.active .coming-soon {
+            background: var(--bg-dark);
+            color: var(--accent-gold);
+        }
+
+        .features-panel {
+            display: none;
+        }
+
+        .features-panel.active {
+            display: block;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .features-panel-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .features-panel-header h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .features-panel-header p {
+            color: var(--text-secondary);
+            font-size: 17px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 36px 32px;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 100px 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 40px;
+            border-radius: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-4px);
+        }
+
+        .stat-value {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 140px 0;
+            position: relative;
+        }
+
+        .pricing::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .pricing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .toggle-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .toggle-label.active {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            width: 64px;
+            height: 34px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active::before {
+            left: 34px;
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, var(--accent-emerald), #34d399);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 48px 40px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, var(--bg-card) 100%);
+            border-color: var(--accent-gold);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-12px);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            color: var(--bg-dark);
+            padding: 8px 24px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 36px;
+            padding-bottom: 36px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .pricing-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .pricing-card .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .pricing-card .price {
+            font-size: 56px;
+            font-weight: 800;
+            margin: 24px 0;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .pricing-card.featured .price {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-card .price .currency {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .pricing-card .price .period {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .pricing-card.featured .price .period {
+            -webkit-text-fill-color: var(--text-muted);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 36px;
+        }
+
+        .pricing-features li {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .pricing-features li:last-child {
+            border: none;
+        }
+
+        .check-icon {
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-dark);
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .pricing-card .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 16px;
+        }
+
+        .yearly-price {
+            display: none;
+        }
+
+        /* Why Us Section */
+        .why-us {
+            padding: 140px 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
+            align-items: center;
+        }
+
+        .why-content h2 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        .why-content h2 span {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .why-content > p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .why-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .why-item {
+            display: flex;
+            gap: 20px;
+            padding: 24px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .why-item:hover {
+            border-color: var(--accent-gold);
+            transform: translateX(8px);
+        }
+
+        .why-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .why-text h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .why-text p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .why-visual {
+            position: relative;
+        }
+
+        .why-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .why-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+
+        .testimonial-quote {
+            font-size: 20px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: 32px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .testimonial-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--bg-dark);
+        }
+
+        .testimonial-info strong {
+            display: block;
+            font-size: 17px;
+            margin-bottom: 4px;
+        }
+
+        .testimonial-info span {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 140px 0;
+            position: relative;
+        }
+
+        .contact::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+        }
+
+        .contact-info h2 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .contact-info h2 span {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .contact-info > p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .contact-method:hover {
+            border-color: var(--accent-gold);
+            transform: translateX(8px);
+        }
+
+        .contact-method-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .contact-method-text strong {
+            display: block;
+            font-size: 17px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .contact-method-text span {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .contact-form-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 48px;
+            position: relative;
+        }
+
+        .contact-form-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 48px;
+            right: 48px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+
+        .contact-form h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 32px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .contact-form .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 16px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 80px 0 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 20px;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            width: 44px;
+            height: 44px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .social-link:hover {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: var(--bg-dark);
+            transform: translateY(-4px);
+        }
+
+        .footer-column h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 14px;
+        }
+
+        .footer-column ul a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .footer-column ul a:hover {
+            color: var(--accent-gold);
+        }
+
+        .footer-bottom {
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-legal a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-legal a:hover {
+            color: var(--accent-gold);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .hero-container {
+                gap: 60px;
+            }
+
+            .hero-content h1 {
+                font-size: 52px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 20px;
+            }
+
+            .hero-content h1 {
+                font-size: 40px;
+            }
+
+            .section-header h2 {
+                font-size: 36px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .product-tab {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 32px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .pricing-card {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#top" class="logo logo-custom" style="display: flex; align-items: center; gap: 14px;">
+                <div class="logo-icon-custom" style="width: 58px; height: 58px;">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="dijiserBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#3b82f6"/>
+                                <stop offset="100%" stop-color="#1d4ed8"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Cloud shape -->
+                        <path d="M75 45c0-11-9-20-20-20-9 0-16 6-19 14-1 0-2 0-3 0-9 0-16 7-16 16s7 16 16 16h42c7 0 13-6 13-13s-6-13-13-13z" fill="url(#dijiserBlue)"/>
+                        <!-- Code brackets inside cloud -->
+                        <path d="M38 52l-6 6 6 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <path d="M62 52l6 6-6 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <path d="M54 48l-8 20" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    </svg>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <span style="font-size: 34px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; font-family: 'Inter', system-ui, sans-serif; line-height: 1;">dijiser</span>
+                    <span style="font-size: 9px; font-weight: 400; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; margin-top: 2px;">İşini Dijitalleştirir</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#top">Ana Sayfa</a></li>
+                <li><a href="#urunler">Ürünler</a></li>
+                <li><a href="#ozellikler">Özellikler</a></li>
+                <li><a href="#fiyatlar">Fiyatlar</a></li>
+                <li><a href="#iletisim">İletişim</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <div class="login-dropdown">
+                    <a href="#" class="btn btn-outline login-btn">
+                        Giriş Yap
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <div class="login-menu">
+                        <a href="/tedarik-login" class="login-option">
+                            <div class="login-option-icon tedarik-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                </svg>
+                            </div>
+                            <div class="login-option-text">
+                                <strong>Dijiser Proje ve Tedarik</strong>
+                                <span>Tedarik Yönetimi</span>
+                            </div>
+                        </a>
+                        <a href="/lojistik-login" class="login-option">
+                            <div class="login-option-icon lojistik-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="3" width="15" height="13"/>
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                                </svg>
+                            </div>
+                            <div class="login-option-text">
+                                <strong>Dijiser Lojistik</strong>
+                                <span>Filo Yönetimi</span>
+                            </div>
+                        </a>
+                        <a href="/servis-login" class="login-option">
+                            <div class="login-option-icon servis-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                </svg>
+                            </div>
+                            <div class="login-option-text">
+                                <strong>Dijiser Servis</strong>
+                                <span>Teknik Servis</span>
+                            </div>
+                        </a>
+                        <a href="#" class="login-option disabled">
+                            <div class="login-option-icon depo-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/>
+                                    <path d="M6 18h12"/>
+                                    <path d="M6 14h12"/>
+                                    <rect x="6" y="10" width="12" height="12"/>
+                                </svg>
+                            </div>
+                            <div class="login-option-text">
+                                <strong>Dijiser Depo</strong>
+                                <span>Depo Yönetimi</span>
+                            </div>
+                            <span class="coming-badge">Yakında</span>
+                        </a>
+                        <a href="#" class="login-option disabled">
+                            <div class="login-option-icon insaat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 20h20"/>
+                                    <path d="M5 20V8l7-5 7 5v12"/>
+                                    <path d="M9 20v-6h6v6"/>
+                                </svg>
+                            </div>
+                            <div class="login-option-text">
+                                <strong>Dijiser İnşaat</strong>
+                                <span>Şantiye Yönetimi</span>
+                            </div>
+                            <span class="coming-badge">Yakında</span>
+                        </a>
+                    </div>
+                </div>
+                <a href="#iletisim" class="btn btn-primary">Demo Talep Et</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="top">
+        <div class="hero-bg">
+            <div class="hero-glow"></div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    Kurulum gerektirmez; e-posta ile anında giriş yapın, kolay ve hızlı arayüz ile tüm iş süreçlerinizi tek platformdan yönetin.
+                </div>
+                <h1>İş Süreçlerinizi<br><span>Dijitalleştirin</span></h1>
+                <p>Tedarik zincirinden lojistiğe, teknik servisten depo yönetimine kadar tüm operasyonlarınızı tek bir platformda yönetin.</p>
+                <div class="hero-buttons">
+                    <a href="#urunler" class="btn btn-primary">Ürünleri Keşfet</a>
+                    <a href="#iletisim" class="btn btn-ghost">Ücretsiz Demo</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">5<span></span></div>
+                        <div class="hero-stat-label">Entegre Modül</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">%40<span></span></div>
+                        <div class="hero-stat-label">Verimlilik Artışı</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">7/24<span></span></div>
+                        <div class="hero-stat-label">Destek</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <div class="hero-card-header">
+                        <div class="hero-card-dots">
+                            <div class="hero-card-dot red"></div>
+                            <div class="hero-card-dot yellow"></div>
+                            <div class="hero-card-dot green"></div>
+                        </div>
+                        <span class="hero-card-title">Dijiser Dashboard</span>
+                    </div>
+                    <div class="hero-card-stats">
+                        <div class="hero-stat-card">
+                            <div class="value">24</div>
+                            <div class="label">Aktif Proje</div>
+                        </div>
+                        <div class="hero-stat-card">
+                            <div class="value">156</div>
+                            <div class="label">Sipariş</div>
+                        </div>
+                        <div class="hero-stat-card">
+                            <div class="value">89%</div>
+                            <div class="label">Verimlilik</div>
+                        </div>
+                    </div>
+                    <div class="hero-chart">
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                    </div>
+                </div>
+                <div class="hero-floating hero-floating-1">
+                    <div class="hero-floating-icon success">✓</div>
+                    <div class="hero-floating-text">
+                        <strong>Sipariş Tamamlandı</strong>
+                        <span>2 dakika önce</span>
+                    </div>
+                </div>
+                <div class="hero-floating hero-floating-2">
+                    <div class="hero-floating-icon alert">📦</div>
+                    <div class="hero-floating-text">
+                        <strong>Yeni Talep</strong>
+                        <span>5 ürün eklendi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="urunler">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">✦ Ürünlerimiz</span>
+                <h2>Entegre <span>Çözümler</span></h2>
+                <p>Her sektöre özel tasarlanmış, güçlü ve esnek yazılım çözümleri ile iş süreçlerinizi optimize edin.</p>
+            </div>
+
+            <div class="product-tabs">
+                <div class="product-tab active" data-product="tedarik">
+                    <div class="tab-icon">📦</div>
+                    <div class="tab-text">
+                        <h4>Dijiser Proje ve Tedarik</h4>
+                        <span>Proje & Tedarik</span>
+                    </div>
+                </div>
+                <div class="product-tab" data-product="lojistik">
+                    <div class="tab-icon">🚛</div>
+                    <div class="tab-text">
+                        <h4>Dijiser Lojistik</h4>
+                        <span>Filo & Sevkiyat</span>
+                    </div>
+                </div>
+                <div class="product-tab" data-product="servis">
+                    <div class="tab-icon">🔧</div>
+                    <div class="tab-text">
+                        <h4>Dijiser Servis</h4>
+                        <span>Teknik Servis</span>
+                    </div>
+                </div>
+                <div class="product-tab" data-product="depo">
+                    <div class="tab-icon">🏭</div>
+                    <div class="tab-text">
+                        <h4>Dijiser Depo</h4>
+                        <span>Depo Yönetimi</span>
+                    </div>
+                    <span class="coming-soon">Yakında</span>
+                </div>
+                <div class="product-tab" data-product="insaat">
+                    <div class="tab-icon">🏗️</div>
+                    <div class="tab-text">
+                        <h4>Dijiser İnşaat</h4>
+                        <span>Şantiye Yönetimi</span>
+                    </div>
+                    <span class="coming-soon">Yakında</span>
+                </div>
+            </div>
+
+            <!-- Tedarik Panel -->
+            <div class="features-panel active" id="tedarik-panel">
+                <div class="features-panel-header">
+                    <h3>📦 Dijiser Proje ve Tedarik</h3>
+                    <p>Sektörünüz için kapsamlı proje ve tedarik yönetim sistemi</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Proje Yönetimi</h3>
+                        <p>Tüm projelerinizi tek panelden takip edin, bütçe ve zaman planlaması yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>Talep Yönetimi</h3>
+                        <p>Şantiyeden gelen talepleri anında alın, onaylayın ve tedarik sürecini başlatın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>Teklif Karşılaştırma</h3>
+                        <p>Tedarikçilerden gelen teklifleri karşılaştırın, en uygun seçeneği belirleyin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📦</div>
+                        <h3>Stok Takibi</h3>
+                        <p>Anlık stok durumunu görüntüleyin, minimum stok uyarıları alın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🧾</div>
+                        <h3>Fatura Yönetimi</h3>
+                        <p>Faturaları dijital ortamda saklayın, ödeme takibi yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Raporlama</h3>
+                        <p>Detaylı analiz ve raporlarla iş süreçlerinizi optimize edin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lojistik Panel -->
+            <div class="features-panel" id="lojistik-panel">
+                <div class="features-panel-header">
+                    <h3>🚛 Dijiser Lojistik</h3>
+                    <p>Filo ve sevkiyat yönetimi için tam entegre çözüm</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🚛</div>
+                        <h3>Araç Takibi</h3>
+                        <p>Filonuzdaki tüm araçları anlık olarak takip edin, rota optimizasyonu yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📍</div>
+                        <h3>Sevkiyat Yönetimi</h3>
+                        <p>Sevkiyatları planlayın, teslimat durumlarını gerçek zamanlı izleyin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👨‍✈️</div>
+                        <h3>Sürücü Yönetimi</h3>
+                        <p>Sürücü performansını takip edin, görev atamalarını yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⛽</div>
+                        <h3>Yakıt Takibi</h3>
+                        <p>Yakıt tüketimini analiz edin, maliyetleri optimize edin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h3>Bakım Yönetimi</h3>
+                        <p>Araç bakım takvimlerini oluşturun, periyodik bakımları takip edin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Maliyet Analizi</h3>
+                        <p>Araç bazlı maliyet analizi yapın, karlılığı artırın.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Servis Panel -->
+            <div class="features-panel" id="servis-panel">
+                <div class="features-panel-header">
+                    <h3>🔧 Dijiser Servis</h3>
+                    <p>Teknik servis operasyonları için profesyonel yönetim sistemi</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎫</div>
+                        <h3>Servis Talepleri</h3>
+                        <p>Müşteri taleplerini kaydedin, önceliklendirin ve takip edin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <h3>Teknisyen Yönetimi</h3>
+                        <p>Teknisyen performansını izleyin, görev atamalarını yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📅</div>
+                        <h3>Randevu Sistemi</h3>
+                        <p>Online randevu alın, servis takvimini otomatik yönetin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔩</div>
+                        <h3>Yedek Parça Stoku</h3>
+                        <p>Yedek parça envanterini yönetin, otomatik sipariş oluşturun.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>Servis Raporları</h3>
+                        <p>Detaylı servis raporları oluşturun, müşteriye anında gönderin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⭐</div>
+                        <h3>Müşteri Memnuniyeti</h3>
+                        <p>Geri bildirimleri toplayın, hizmet kalitesini sürekli iyileştirin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Depo Panel -->
+            <div class="features-panel" id="depo-panel">
+                <div class="features-panel-header">
+                    <h3>🏭 Dijiser Depo</h3>
+                    <p>Modern depo ve envanter yönetimi çözümü - Yakında</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📦</div>
+                        <h3>Envanter Yönetimi</h3>
+                        <p>Tüm ürünlerinizi kategorize edin, stok seviyelerini anlık takip edin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📍</div>
+                        <h3>Lokasyon Takibi</h3>
+                        <p>Raf, koridor ve bölge bazlı ürün konumlandırması yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Barkod Sistemi</h3>
+                        <p>Barkod okuyucu ile hızlı giriş-çıkış işlemleri yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Transfer Yönetimi</h3>
+                        <p>Depolar arası transfer işlemlerini planlayın ve takip edin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Talep Tahmini</h3>
+                        <p>Geçmiş verilere dayanarak stok ihtiyaçlarını önceden belirleyin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>Sayım Yönetimi</h3>
+                        <p>Periyodik ve döngüsel sayım süreçlerini kolayca yönetin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İnşaat Panel -->
+            <div class="features-panel" id="insaat-panel">
+                <div class="features-panel-header">
+                    <h3>🏗️ Dijiser İnşaat</h3>
+                    <p>Şantiye ve inşaat projesi yönetimi - Yakında</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📐</div>
+                        <h3>Proje Planlama</h3>
+                        <p>İş programı oluşturun, kritik yol analizleri yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👷</div>
+                        <h3>İşgücü Yönetimi</h3>
+                        <p>Personel ve taşeron takibi, puantaj ve hakediş yönetimi.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏗️</div>
+                        <h3>İş İlerlemesi</h3>
+                        <p>Günlük ilerleme raporları, fotoğraf ve video ile belgeleme.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚠️</div>
+                        <h3>İSG Takibi</h3>
+                        <p>İş sağlığı ve güvenliği formları, denetim kayıtları.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💵</div>
+                        <h3>Maliyet Kontrolü</h3>
+                        <p>Bütçe takibi, sapma analizleri ve maliyet raporları.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📄</div>
+                        <h3>Doküman Yönetimi</h3>
+                        <p>Teknik çizimler, ruhsatlar ve tüm proje dokümanları.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="ozellikler">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Entegre Modül</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">%100</div>
+                    <div class="stat-label">Türkçe Arayüz</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">99.9%</div>
+                    <div class="stat-label">Sistem Sürekliliği</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">7/24</div>
+                    <div class="stat-label">Destek Hizmeti</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="fiyatlar">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">✦ Fiyatlandırma</span>
+                <h2>Şeffaf <span>Fiyatlar</span></h2>
+                <p>İhtiyacınıza uygun planı seçin, gizli maliyet yok. Tüm fiyatlar tek sistem içindir.</p>
+
+                <div class="pricing-toggle">
+                    <span class="toggle-label active" id="monthlyLabel">Aylık</span>
+                    <div class="toggle-switch" id="pricingToggle"></div>
+                    <span class="toggle-label" id="yearlyLabel">Yıllık</span>
+                    <span class="discount-badge">%15 İndirim</span>
+                </div>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Başlangıç</h3>
+                        <p class="subtitle">Küçük işletmeler için</p>
+                        <div class="price">
+                            <span class="currency">₺</span>
+                            <span class="monthly-price">1.500</span>
+                            <span class="yearly-price">1.275</span>
+                            <span class="period">/ay</span>
+                        </div>
+                        <div class="yearly-total" style="display: none; font-size: 14px; color: var(--accent-gold); margin-top: 8px;">Yıllık Toplam: <strong>₺15.300</strong></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><span class="check-icon">✓</span> 3 Kullanıcı</li>
+                        <li><span class="check-icon">✓</span> 5 Proje / 50 Müşteri</li>
+                        <li><span class="check-icon">✓</span> 100 Ürün Kapasitesi</li>
+                        <li><span class="check-icon">✓</span> E-posta Desteği</li>
+                        <li><span class="check-icon">✓</span> Temel Raporlama</li>
+                    </ul>
+                    <a href="#iletisim" class="btn btn-outline">Başvur</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Popüler</div>
+                    <div class="pricing-header">
+                        <h3>Profesyonel</h3>
+                        <p class="subtitle">Büyüyen işletmeler için</p>
+                        <div class="price">
+                            <span class="currency">₺</span>
+                            <span class="monthly-price">2.500</span>
+                            <span class="yearly-price">2.125</span>
+                            <span class="period">/ay</span>
+                        </div>
+                        <div class="yearly-total" style="display: none; font-size: 14px; color: var(--accent-gold); margin-top: 8px;">Yıllık Toplam: <strong>₺25.500</strong></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><span class="check-icon">✓</span> 10 Kullanıcı</li>
+                        <li><span class="check-icon">✓</span> 25 Proje / 250 Müşteri</li>
+                        <li><span class="check-icon">✓</span> 500 Ürün Kapasitesi</li>
+                        <li><span class="check-icon">✓</span> Öncelikli Destek</li>
+                        <li><span class="check-icon">✓</span> Gelişmiş Raporlama</li>
+                    </ul>
+                    <a href="#iletisim" class="btn btn-primary">Başvur</a>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Kurumsal</h3>
+                        <p class="subtitle">Büyük işletmeler için</p>
+                        <div class="price">
+                            <span class="currency">₺</span>
+                            <span class="monthly-price">3.500</span>
+                            <span class="yearly-price">2.975</span>
+                            <span class="period">/ay</span>
+                        </div>
+                        <div class="yearly-total" style="display: none; font-size: 14px; color: var(--accent-gold); margin-top: 8px;">Yıllık Toplam: <strong>₺35.700</strong></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><span class="check-icon">✓</span> Sınırsız Kullanıcı</li>
+                        <li><span class="check-icon">✓</span> Sınırsız Proje & Müşteri</li>
+                        <li><span class="check-icon">✓</span> Sınırsız Ürün</li>
+                        <li><span class="check-icon">✓</span> 7/24 Destek</li>
+                        <li><span class="check-icon">✓</span> Özel Entegrasyonlar</li>
+                    </ul>
+                    <a href="#iletisim" class="btn btn-outline">Başvur</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Us Section -->
+    <section class="why-us">
+        <div class="container">
+            <div class="why-grid">
+                <div class="why-content">
+                    <h2>Neden <span>Dijiser?</span></h2>
+                    <p>Türkiye'nin önde gelen kurumsal yazılım platformu olarak, işletmenizin dijital dönüşümünü hızlandırıyoruz.</p>
+
+                    <div class="why-list">
+                        <div class="why-item">
+                            <div class="why-icon">🔒</div>
+                            <div class="why-text">
+                                <h4>Kurumsal Güvenlik</h4>
+                                <p>256-bit SSL şifreleme ve günlük yedekleme ile verileriniz güvende.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon">⚡</div>
+                            <div class="why-text">
+                                <h4>Yüksek Performans</h4>
+                                <p>Optimize edilmiş altyapı ile kesintisiz ve hızlı deneyim.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon">🎯</div>
+                            <div class="why-text">
+                                <h4>Türkiye'ye Özel</h4>
+                                <p>Türk iş kültürüne ve mevzuatına uygun tasarlanmış çözümler.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon">🤝</div>
+                            <div class="why-text">
+                                <h4>Uzman Destek</h4>
+                                <p>Deneyimli ekibimiz her adımda yanınızda.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-visual">
+                    <div class="why-card" style="text-align: center; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🚀</div>
+                        <h3 style="color: #d4af37; margin-bottom: 15px; font-size: 22px;">Şeffaflık İlkemiz</h3>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 15px; line-height: 1.6;">Dijiser olarak sahte referanslar kullanmıyoruz. Platformumuzu deneyin, kararı siz verin. Ücretsiz demo ile tüm özellikleri test edebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="iletisim">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Bizimle <span>İletişime</span> Geçin</h2>
+                    <p>Sorularınız için bize ulaşın veya ücretsiz demo talep edin. Ekibimiz en kısa sürede size dönüş yapacaktır.</p>
+
+                    <div class="contact-methods">
+                        <a href="mailto:destek@dijiser.com" class="contact-method">
+                            <div class="contact-method-icon">✉️</div>
+                            <div class="contact-method-text">
+                                <strong>E-posta</strong>
+                                <span>destek@dijiser.com</span>
+                            </div>
+                        </a>
+                        <a href="tel:+908501234567" class="contact-method">
+                            <div class="contact-method-icon">📞</div>
+                            <div class="contact-method-text">
+                                <strong>Telefon</strong>
+                                <span>0501 567 54 72</span>
+                            </div>
+                        </a>
+                        <div class="contact-method">
+                            <div class="contact-method-icon">📍</div>
+                            <div class="contact-method-text">
+                                <strong>Adres</strong>
+                                <span>İstanbul, Türkiye</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper">
+                    <form class="contact-form" id="contactForm">
+                        <h3>Demo Talep Formu</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ad Soyad</label>
+                                <input type="text" placeholder="Adınız Soyadınız" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Firma Adı</label>
+                                <input type="text" placeholder="Firma Adınız" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>E-posta</label>
+                                <input type="email" placeholder="ornek@firma.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefon</label>
+                                <input type="tel" placeholder="0500 000 00 00">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>İlgilendiğiniz Ürün</label>
+                            <select required>
+                                <option value="">Seçiniz</option>
+                                <option value="tedarik">Dijiser Proje ve Tedarik</option>
+                                <option value="lojistik">Dijiser Lojistik</option>
+                                <option value="servis">Dijiser Servis</option>
+                                <option value="depo">Dijiser Depo</option>
+                                <option value="insaat">Dijiser İnşaat</option>
+                                <option value="hepsi">Tüm Ürünler</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mesajınız</label>
+                            <textarea placeholder="Size nasıl yardımcı olabiliriz?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Demo Talep Et</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#top" class="logo logo-custom" style="display: flex; align-items: center; gap: 12px;">
+                        <div class="logo-icon-custom" style="width: 50px; height: 50px;">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="dijiserBlueFooter" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#3b82f6"/>
+                                        <stop offset="100%" stop-color="#1d4ed8"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M75 45c0-11-9-20-20-20-9 0-16 6-19 14-1 0-2 0-3 0-9 0-16 7-16 16s7 16 16 16h42c7 0 13-6 13-13s-6-13-13-13z" fill="url(#dijiserBlueFooter)"/>
+                                <path d="M38 52l-6 6 6 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <path d="M62 52l6 6-6 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <path d="M54 48l-8 20" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                            </svg>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                            <span style="font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; font-family: 'Inter', system-ui, sans-serif; line-height: 1;">dijiser</span>
+                            <span style="font-size: 8px; font-weight: 400; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; margin-top: 2px;">İşini Dijitalleştirir</span>
+                        </div>
+                    </a>
+                    <p>İş süreçlerinizi dijitalleştirin, verimliliğinizi artırın. Türkiye'nin kurumsal dijital dönüşüm platformu.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">in</a>
+                        <a href="#" class="social-link">𝕏</a>
+                        <a href="#" class="social-link">ig</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Ürünler</h4>
+                    <ul>
+                        <li><a href="#urunler">Dijiser Proje ve Tedarik</a></li>
+                        <li><a href="#urunler">Dijiser Lojistik</a></li>
+                        <li><a href="#urunler">Dijiser Servis</a></li>
+                        <li><a href="#urunler">Dijiser Depo</a></li>
+                        <li><a href="#urunler">Dijiser İnşaat</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Şirket</h4>
+                    <ul>
+                        <li><a href="/hakkimizda">Hakkımızda</a></li>
+                        <li><a href="#">Kariyer</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#iletisim">İletişim</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Destek</h4>
+                    <ul>
+                        <li><a href="#">Yardım Merkezi</a></li>
+                        <li><a href="#">Dokümantasyon</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Durum Sayfası</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2024 Dijiser. Tüm hakları saklıdır.</p>
+                <div class="footer-legal">
+                    <a href="#">Gizlilik Politikası</a>
+                    <a href="#">Kullanım Koşulları</a>
+                    <a href="#">KVKK</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Product tabs
+        const productTabs = document.querySelectorAll('.product-tab');
+        const featuresPanels = document.querySelectorAll('.features-panel');
+
+        productTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const product = tab.dataset.product;
+
+                productTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                featuresPanels.forEach(panel => panel.classList.remove('active'));
+                document.getElementById(`${product}-panel`).classList.add('active');
+            });
+        });
+
+        // Pricing Toggle
+        const pricingToggle = document.getElementById('pricingToggle');
+        const monthlyLabel = document.getElementById('monthlyLabel');
+        const yearlyLabel = document.getElementById('yearlyLabel');
+        const monthlyPrices = document.querySelectorAll('.monthly-price');
+        const yearlyPrices = document.querySelectorAll('.yearly-price');
+
+        const yearlyTotals = document.querySelectorAll('.yearly-total');
+
+        pricingToggle.addEventListener('click', () => {
+            pricingToggle.classList.toggle('active');
+
+            if (pricingToggle.classList.contains('active')) {
+                monthlyLabel.classList.remove('active');
+                yearlyLabel.classList.add('active');
+                monthlyPrices.forEach(price => price.style.display = 'none');
+                yearlyPrices.forEach(price => price.style.display = 'inline');
+                yearlyTotals.forEach(total => total.style.display = 'block');
+            } else {
+                monthlyLabel.classList.add('active');
+                yearlyLabel.classList.remove('active');
+                monthlyPrices.forEach(price => price.style.display = 'inline');
+                yearlyPrices.forEach(price => price.style.display = 'none');
+                yearlyTotals.forEach(total => total.style.display = 'none');
+            }
+        });
+
+        // Contact form
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Demo talebiniz alındı! 14 gün geçerli demo lisans bilgisi mail ile iletilecektir.');
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .pricing-card, .stat-item, .why-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3727 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijiser Servis - Teknik Servis Yönetimi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fc;
+            min-height: 100vh;
+        }
+
+        /* Login Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #11998e;
+        }
+
+        .login-logo span {
+            color: #38ef7d;
+        }
+
+        .login-logo p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #11998e;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #11998e;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            padding: 10px 25px 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo h2 {
+            color: #38ef7d;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .sidebar-logo span {
+            color: #11998e;
+        }
+
+        .sidebar-logo p {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-section {
+            margin-bottom: 10px;
+        }
+
+        .menu-section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-section-title:hover {
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .menu-section-title .arrow {
+            transition: transform 0.3s;
+        }
+
+        .menu-section.collapsed .arrow {
+            transform: rotate(-90deg);
+        }
+
+        .menu-section.collapsed .menu-items {
+            display: none;
+        }
+
+        .menu-items {
+            padding: 5px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px 12px 35px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .menu-item.active {
+            color: #38ef7d;
+            background: rgba(56, 239, 125, 0.1);
+            border-right: 3px solid #38ef7d;
+        }
+
+        .menu-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .logout-btn {
+            margin: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,0,0,0.2);
+            color: #ff6b6b;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: #1a1a2e;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-card .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card .icon.green { background: rgba(56, 239, 125, 0.15); }
+        .stat-card .icon.blue { background: rgba(102, 126, 234, 0.15); }
+        .stat-card .icon.orange { background: rgba(255, 159, 67, 0.15); }
+        .stat-card .icon.red { background: rgba(255, 107, 107, 0.15); }
+        .stat-card .icon.purple { background: rgba(155, 89, 182, 0.15); }
+
+        .stat-card h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            background: #f8f9fc;
+            color: #666;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #eee;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        .badge-primary { background: #cce5ff; color: #004085; }
+        .badge-secondary { background: #e2e3e5; color: #383d41; }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .action-btn.edit { background: #e3f2fd; color: #1976d2; }
+        .action-btn.delete { background: #ffebee; color: #d32f2f; }
+        .action-btn.view { background: #e8f5e9; color: #388e3c; }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s ease;
+        }
+
+        .modal-lg {
+            max-width: 900px;
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            color: #1a1a2e;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #11998e;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: #1a1a2e;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #e74c3c; }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Status Colors */
+        .status-beklemede { color: #f39c12; }
+        .status-atandi { color: #3498db; }
+        .status-yolda { color: #9b59b6; }
+        .status-islemde { color: #e67e22; }
+        .status-tamamlandi { color: #27ae60; }
+        .status-iptal { color: #e74c3c; }
+
+        /* Priority Colors */
+        .priority-acil { background: #e74c3c; color: white; }
+        .priority-yuksek { background: #e67e22; color: white; }
+        .priority-normal { background: #3498db; color: white; }
+        .priority-dusuk { background: #95a5a6; color: white; }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar input,
+        .toolbar select {
+            padding: 10px 15px;
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .toolbar input:focus,
+        .toolbar select:focus {
+            outline: none;
+            border-color: #11998e;
+        }
+
+        .export-btns {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .export-btns button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-excel { background: #217346; color: white; }
+        .btn-pdf { background: #d32f2f; color: white; }
+        .btn-print { background: #1976d2; color: white; }
+
+        /* Quick Stats in header */
+        .quick-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .quick-stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .quick-stat .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .quick-stat .label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Teknisyen Card */
+        .teknisyen-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .teknisyen-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .teknisyen-info h4 {
+            font-size: 16px;
+            color: #1a1a2e;
+            margin-bottom: 3px;
+        }
+
+        .teknisyen-info p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .teknisyen-status {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-box">
+            <div class="login-logo">
+                <h1>Dijiser<span>Servis</span></h1>
+                <p>Teknik Servis Yönetim Sistemi</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label>E-posta Adresi</label>
+                    <input type="email" id="loginEmail" placeholder="ornek@firma.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="login-btn">Giriş Yap</button>
+            </form>
+            <a href="/" class="back-link">← Ana Sayfaya Dön</a>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container" id="appContainer">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <h2>Dijiser<span>Servis</span></h2>
+                <p id="companyName">Teknik Servis Yönetimi</p>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-section-title" onclick="toggleSection(this)">
+                        📊 Genel <span class="arrow">▼</span>
+                    </div>
+                    <div class="menu-items">
+                        <a class="menu-item active" data-page="dashboard">
+                            <span class="icon">📈</span> Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title" onclick="toggleSection(this)">
+                        👥 Müşteri İşlemleri <span class="arrow">▼</span>
+                    </div>
+                    <div class="menu-items">
+                        <a class="menu-item" data-page="musteriler">
+                            <span class="icon">👤</span> Müşteri Yönetimi
+                        </a>
+                        <a class="menu-item" data-page="cihazlar">
+                            <span class="icon">📱</span> Cihaz Kayıtları
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title" onclick="toggleSection(this)">
+                        🔧 Servis İşlemleri <span class="arrow">▼</span>
+                    </div>
+                    <div class="menu-items">
+                        <a class="menu-item" data-page="ariza-kayit">
+                            <span class="icon">📝</span> Arıza Kaydı
+                        </a>
+                        <a class="menu-item" data-page="is-emirleri">
+                            <span class="icon">📋</span> İş Emirleri
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title" onclick="toggleSection(this)">
+                        👷 Ekip Yönetimi <span class="arrow">▼</span>
+                    </div>
+                    <div class="menu-items">
+                        <a class="menu-item" data-page="teknisyenler">
+                            <span class="icon">🔧</span> Teknisyenler
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title" onclick="toggleSection(this)">
+                        📦 Parça & Stok <span class="arrow">▼</span>
+                    </div>
+                    <div class="menu-items">
+                        <a class="menu-item" data-page="parcalar">
+                            <span class="icon">🔩</span> Parça Yönetimi
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title" onclick="toggleSection(this)">
+                        💰 Finansal <span class="arrow">▼</span>
+                    </div>
+                    <div class="menu-items">
+                        <a class="menu-item" data-page="faturalar">
+                            <span class="icon">🧾</span> Faturalar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section" id="adminSection" style="display: none;">
+                    <div class="menu-section-title" onclick="toggleSection(this)">
+                        ⚙️ Yönetim <span class="arrow">▼</span>
+                    </div>
+                    <div class="menu-items">
+                        <a class="menu-item" data-page="kullanicilar">
+                            <span class="icon">👥</span> Kullanıcı Yönetimi
+                        </a>
+                        <a class="menu-item" data-page="lisans">
+                            <span class="icon">🔑</span> Lisans Yönetimi
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="logout-btn" onclick="logout()">
+                🚪 Çıkış Yap
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard -->
+            <section class="page-section active" id="page-dashboard">
+                <div class="page-header">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p>Hoş geldiniz! Bugünkü servis özeti</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon orange">📋</div>
+                        <h3 id="statBekleyen">0</h3>
+                        <p>Bekleyen İş</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon blue">🔧</div>
+                        <h3 id="statDevam">0</h3>
+                        <p>Devam Eden</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon green">✅</div>
+                        <h3 id="statTamamlanan">0</h3>
+                        <p>Tamamlanan (Bu Ay)</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon purple">👷</div>
+                        <h3 id="statTeknisyen">0</h3>
+                        <p>Aktif Teknisyen</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon red">⚠️</div>
+                        <h3 id="statAcil">0</h3>
+                        <p>Acil Arıza</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon green">💰</div>
+                        <h3 id="statGelir">₺0</h3>
+                        <p>Bu Ay Gelir</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Bugünkü Randevular</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Saat</th>
+                                    <th>Müşteri</th>
+                                    <th>Cihaz</th>
+                                    <th>Arıza</th>
+                                    <th>Teknisyen</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayAppointments">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Kritik Parça Stoku</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parça Kodu</th>
+                                    <th>Parça Adı</th>
+                                    <th>Mevcut Stok</th>
+                                    <th>Minimum Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody id="criticalStock">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Müşteri Yönetimi -->
+            <section class="page-section" id="page-musteriler">
+                <div class="page-header">
+                    <div>
+                        <h1>Müşteri Yönetimi</h1>
+                        <p>Müşteri bilgilerini görüntüleyin ve yönetin</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('musteriModal')">
+                        + Yeni Müşteri
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" id="musteriSearch" placeholder="🔍 Müşteri ara..." onkeyup="filterMusteriler()">
+                        <select id="musteriTipiFilter" onchange="filterMusteriler()">
+                            <option value="">Tüm Tipler</option>
+                            <option value="Bireysel">Bireysel</option>
+                            <option value="Kurumsal">Kurumsal</option>
+                        </select>
+                        <div class="export-btns">
+                            <button class="btn-excel" onclick="exportExcel('musteriler')">📊 Excel</button>
+                            <button class="btn-pdf" onclick="exportPDF('musteriler')">📄 PDF</button>
+                            <button class="btn-print" onclick="printTable('musteriler')">🖨️ Yazdır</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="musterilerTable">
+                            <thead>
+                                <tr>
+                                    <th>Müşteri Kodu</th>
+                                    <th>Ad Soyad / Firma</th>
+                                    <th>Tip</th>
+                                    <th>Telefon</th>
+                                    <th>E-posta</th>
+                                    <th>Adres</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="musterilerBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cihaz Kayıtları -->
+            <section class="page-section" id="page-cihazlar">
+                <div class="page-header">
+                    <div>
+                        <h1>Cihaz Kayıtları</h1>
+                        <p>Müşterilere ait cihaz ve ürün bilgileri</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('cihazModal')">
+                        + Yeni Cihaz
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" id="cihazSearch" placeholder="🔍 Cihaz ara..." onkeyup="filterCihazlar()">
+                        <select id="cihazTipiFilter" onchange="filterCihazlar()">
+                            <option value="">Tüm Tipler</option>
+                            <option value="Klima">Klima</option>
+                            <option value="Kombi">Kombi</option>
+                            <option value="Buzdolabı">Buzdolabı</option>
+                            <option value="Çamaşır Makinesi">Çamaşır Makinesi</option>
+                            <option value="Bulaşık Makinesi">Bulaşık Makinesi</option>
+                            <option value="Fırın">Fırın</option>
+                            <option value="Asansör">Asansör</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                        <div class="export-btns">
+                            <button class="btn-excel" onclick="exportExcel('cihazlar')">📊 Excel</button>
+                            <button class="btn-pdf" onclick="exportPDF('cihazlar')">📄 PDF</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="cihazlarTable">
+                            <thead>
+                                <tr>
+                                    <th>Müşteri</th>
+                                    <th>Cihaz Tipi</th>
+                                    <th>Marka</th>
+                                    <th>Model</th>
+                                    <th>Seri No</th>
+                                    <th>Garanti</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cihazlarBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Arıza Kaydı -->
+            <section class="page-section" id="page-ariza-kayit">
+                <div class="page-header">
+                    <div>
+                        <h1>Arıza Kaydı</h1>
+                        <p>Yeni arıza kaydı oluşturun</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <form id="arizaKayitForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Müşteri Seçin *</label>
+                                <select id="arizaMusteri" required onchange="loadMusteriCihazlar(this.value)">
+                                    <option value="">Müşteri seçin...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Cihaz Seçin *</label>
+                                <select id="arizaCihaz" required>
+                                    <option value="">Önce müşteri seçin...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Arıza Tipi *</label>
+                                <select id="arizaTipi" required>
+                                    <option value="">Seçin...</option>
+                                    <option value="Çalışmıyor">Çalışmıyor</option>
+                                    <option value="Ses Geliyor">Ses Geliyor</option>
+                                    <option value="Su Kaçırıyor">Su Kaçırıyor</option>
+                                    <option value="Soğutmuyor">Soğutmuyor</option>
+                                    <option value="Isıtmıyor">Isıtmıyor</option>
+                                    <option value="Hata Kodu">Hata Kodu</option>
+                                    <option value="Bakım">Periyodik Bakım</option>
+                                    <option value="Kurulum">Yeni Kurulum</option>
+                                    <option value="Diğer">Diğer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Öncelik *</label>
+                                <select id="arizaOncelik" required>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Yüksek">Yüksek</option>
+                                    <option value="Acil">Acil</option>
+                                    <option value="Düşük">Düşük</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Randevu Tarihi</label>
+                                <input type="date" id="arizaRandevuTarih">
+                            </div>
+                            <div class="form-group">
+                                <label>Randevu Saati</label>
+                                <input type="time" id="arizaRandevuSaat">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Arıza Tanımı *</label>
+                            <textarea id="arizaTanim" rows="4" placeholder="Müşterinin bildirdiği arıza detaylarını yazın..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Müşteri Notu</label>
+                            <textarea id="arizaMusteriNotu" rows="2" placeholder="Müşteriye özel notlar..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">📝 Arıza Kaydı Oluştur</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- İş Emirleri -->
+            <section class="page-section" id="page-is-emirleri">
+                <div class="page-header">
+                    <div>
+                        <h1>İş Emirleri</h1>
+                        <p>Tüm servis işlerini takip edin</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" id="isEmriSearch" placeholder="🔍 Ara..." onkeyup="filterIsEmirleri()">
+                        <select id="isEmriDurumFilter" onchange="filterIsEmirleri()">
+                            <option value="">Tüm Durumlar</option>
+                            <option value="Beklemede">Beklemede</option>
+                            <option value="Atandı">Atandı</option>
+                            <option value="Yolda">Yolda</option>
+                            <option value="İşlemde">İşlemde</option>
+                            <option value="Tamamlandı">Tamamlandı</option>
+                            <option value="İptal">İptal</option>
+                        </select>
+                        <select id="isEmriOncelikFilter" onchange="filterIsEmirleri()">
+                            <option value="">Tüm Öncelikler</option>
+                            <option value="Acil">Acil</option>
+                            <option value="Yüksek">Yüksek</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Düşük">Düşük</option>
+                        </select>
+                        <div class="export-btns">
+                            <button class="btn-excel" onclick="exportExcel('isEmirleri')">📊 Excel</button>
+                            <button class="btn-pdf" onclick="exportPDF('isEmirleri')">📄 PDF</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="isEmirleriTable">
+                            <thead>
+                                <tr>
+                                    <th>İş Emri No</th>
+                                    <th>Müşteri</th>
+                                    <th>Cihaz</th>
+                                    <th>Arıza</th>
+                                    <th>Öncelik</th>
+                                    <th>Teknisyen</th>
+                                    <th>Randevu</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="isEmirleriBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Teknisyenler -->
+            <section class="page-section" id="page-teknisyenler">
+                <div class="page-header">
+                    <div>
+                        <h1>Teknisyen Yönetimi</h1>
+                        <p>Servis ekibinizi yönetin</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('teknisyenModal')">
+                        + Yeni Teknisyen
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" id="teknisyenSearch" placeholder="🔍 Teknisyen ara..." onkeyup="filterTeknisyenler()">
+                        <div class="export-btns">
+                            <button class="btn-excel" onclick="exportExcel('teknisyenler')">📊 Excel</button>
+                            <button class="btn-pdf" onclick="exportPDF('teknisyenler')">📄 PDF</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="teknisyenlerTable">
+                            <thead>
+                                <tr>
+                                    <th>Ad Soyad</th>
+                                    <th>Telefon</th>
+                                    <th>E-posta</th>
+                                    <th>Uzmanlık Alanı</th>
+                                    <th>Bölge</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teknisyenlerBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Parça Yönetimi -->
+            <section class="page-section" id="page-parcalar">
+                <div class="page-header">
+                    <div>
+                        <h1>Parça Yönetimi</h1>
+                        <p>Yedek parça stok takibi</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('parcaModal')">
+                        + Yeni Parça
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" id="parcaSearch" placeholder="🔍 Parça ara..." onkeyup="filterParcalar()">
+                        <select id="parcaKategoriFilter" onchange="filterParcalar()">
+                            <option value="">Tüm Kategoriler</option>
+                        </select>
+                        <div class="export-btns">
+                            <button class="btn-excel" onclick="exportExcel('parcalar')">📊 Excel</button>
+                            <button class="btn-pdf" onclick="exportPDF('parcalar')">📄 PDF</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="parcalarTable">
+                            <thead>
+                                <tr>
+                                    <th>Parça Kodu</th>
+                                    <th>Parça Adı</th>
+                                    <th>Kategori</th>
+                                    <th>Marka</th>
+                                    <th>Stok</th>
+                                    <th>Min Stok</th>
+                                    <th>Alış Fiyatı</th>
+                                    <th>Satış Fiyatı</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parcalarBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Faturalar -->
+            <section class="page-section" id="page-faturalar">
+                <div class="page-header">
+                    <div>
+                        <h1>Fatura Yönetimi</h1>
+                        <p>Servis faturalarını yönetin</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('faturaModal')">
+                        + Yeni Fatura
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" id="faturaSearch" placeholder="🔍 Fatura ara..." onkeyup="filterFaturalar()">
+                        <select id="faturaOdemeFilter" onchange="filterFaturalar()">
+                            <option value="">Tüm Durumlar</option>
+                            <option value="Ödenmedi">Ödenmedi</option>
+                            <option value="Kısmi Ödendi">Kısmi Ödendi</option>
+                            <option value="Ödendi">Ödendi</option>
+                        </select>
+                        <div class="export-btns">
+                            <button class="btn-excel" onclick="exportExcel('faturalar')">📊 Excel</button>
+                            <button class="btn-pdf" onclick="exportPDF('faturalar')">📄 PDF</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="faturalarTable">
+                            <thead>
+                                <tr>
+                                    <th>Fatura No</th>
+                                    <th>Müşteri</th>
+                                    <th>İş Emri</th>
+                                    <th>Tarih</th>
+                                    <th>İşçilik</th>
+                                    <th>Parça</th>
+                                    <th>Toplam</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="faturalarBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Kullanıcı Yönetimi -->
+            <section class="page-section" id="page-kullanicilar">
+                <div class="page-header">
+                    <div>
+                        <h1>Kullanıcı Yönetimi</h1>
+                        <p>Sistem kullanıcılarını yönetin</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('kullaniciModal')">
+                        + Yeni Kullanıcı
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table id="kullanicilarTable">
+                            <thead>
+                                <tr>
+                                    <th>Ad Soyad</th>
+                                    <th>E-posta</th>
+                                    <th>Telefon</th>
+                                    <th>Rol</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kullanicilarBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lisans Yönetimi -->
+            <section class="page-section" id="page-lisans">
+                <div class="page-header">
+                    <div>
+                        <h1>Lisans Yönetimi</h1>
+                        <p>Lisans bilgilerinizi görüntüleyin</p>
+                    </div>
+                </div>
+
+                <div class="card" id="lisansBilgileri">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Lisans Kodu</label>
+                            <input type="text" id="lisansKodu" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Firma Adı</label>
+                            <input type="text" id="lisansFirma" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Paket Tipi</label>
+                            <input type="text" id="lisansPaket" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Durum</label>
+                            <input type="text" id="lisansDurum" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Başlangıç Tarihi</label>
+                            <input type="text" id="lisansBaslangic" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Bitiş Tarihi</label>
+                            <input type="text" id="lisansBitis" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Kalan Gün</label>
+                            <input type="text" id="lisansKalan" readonly>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- Müşteri Modal -->
+    <div class="modal-overlay" id="musteriModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="musteriModalTitle">Yeni Müşteri</h2>
+                <button class="modal-close" onclick="closeModal('musteriModal')">&times;</button>
+            </div>
+            <form id="musteriForm">
+                <input type="hidden" id="musteriId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Müşteri Tipi *</label>
+                        <select id="musteriTipi" required onchange="toggleMusteriFields()">
+                            <option value="Bireysel">Bireysel</option>
+                            <option value="Kurumsal">Kurumsal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Müşteri Kodu</label>
+                        <input type="text" id="musteriKodu" placeholder="Otomatik oluşturulur">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" id="adSoyadGroup">
+                        <label>Ad Soyad *</label>
+                        <input type="text" id="musteriAdSoyad" required>
+                    </div>
+                    <div class="form-group" id="firmaAdiGroup" style="display:none;">
+                        <label>Firma Adı *</label>
+                        <input type="text" id="musteriFirmaAdi">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon *</label>
+                        <input type="tel" id="musteriTelefon" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Telefon 2</label>
+                        <input type="tel" id="musteriTelefon2">
+                    </div>
+                    <div class="form-group">
+                        <label>E-posta</label>
+                        <input type="email" id="musteriEmail">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>İl</label>
+                        <input type="text" id="musteriIl">
+                    </div>
+                    <div class="form-group">
+                        <label>İlçe</label>
+                        <input type="text" id="musteriIlce">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Adres</label>
+                    <textarea id="musteriAdres" rows="2"></textarea>
+                </div>
+                <div class="form-row" id="vergiFields" style="display:none;">
+                    <div class="form-group">
+                        <label>Vergi No</label>
+                        <input type="text" id="musteriVergiNo">
+                    </div>
+                    <div class="form-group">
+                        <label>Vergi Dairesi</label>
+                        <input type="text" id="musteriVergiDairesi">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notlar</label>
+                    <textarea id="musteriNotlar" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cihaz Modal -->
+    <div class="modal-overlay" id="cihazModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="cihazModalTitle">Yeni Cihaz Kaydı</h2>
+                <button class="modal-close" onclick="closeModal('cihazModal')">&times;</button>
+            </div>
+            <form id="cihazForm">
+                <input type="hidden" id="cihazId">
+                <div class="form-group">
+                    <label>Müşteri *</label>
+                    <select id="cihazMusteriId" required>
+                        <option value="">Müşteri seçin...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cihaz Tipi *</label>
+                        <select id="cihazTipi" required>
+                            <option value="">Seçin...</option>
+                            <option value="Klima">Klima</option>
+                            <option value="Kombi">Kombi</option>
+                            <option value="Buzdolabı">Buzdolabı</option>
+                            <option value="Çamaşır Makinesi">Çamaşır Makinesi</option>
+                            <option value="Bulaşık Makinesi">Bulaşık Makinesi</option>
+                            <option value="Fırın">Fırın</option>
+                            <option value="Asansör">Asansör</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Marka *</label>
+                        <input type="text" id="cihazMarka" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input type="text" id="cihazModel">
+                    </div>
+                    <div class="form-group">
+                        <label>Seri No</label>
+                        <input type="text" id="cihazSeriNo">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Garanti Bitiş Tarihi</label>
+                        <input type="date" id="cihazGarantiBitis">
+                    </div>
+                    <div class="form-group">
+                        <label>Kurulum Tarihi</label>
+                        <input type="date" id="cihazKurulumTarihi">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Kurulum Adresi (Farklıysa)</label>
+                    <textarea id="cihazAdres" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Notlar</label>
+                    <textarea id="cihazNotlar" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Teknisyen Modal -->
+    <div class="modal-overlay" id="teknisyenModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="teknisyenModalTitle">Yeni Teknisyen</h2>
+                <button class="modal-close" onclick="closeModal('teknisyenModal')">&times;</button>
+            </div>
+            <form id="teknisyenForm">
+                <input type="hidden" id="teknisyenId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ad Soyad *</label>
+                        <input type="text" id="teknisyenAdSoyad" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon *</label>
+                        <input type="tel" id="teknisyenTelefon" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>E-posta</label>
+                        <input type="email" id="teknisyenEmail">
+                    </div>
+                    <div class="form-group">
+                        <label>Uzmanlık Alanı</label>
+                        <input type="text" id="teknisyenUzmanlik" placeholder="Klima, Kombi, Beyaz Eşya...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bölge</label>
+                        <input type="text" id="teknisyenBolge" placeholder="Kadıköy, Üsküdar...">
+                    </div>
+                    <div class="form-group">
+                        <label>Maaş (₺)</label>
+                        <input type="number" id="teknisyenMaas" step="0.01">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>İşe Giriş Tarihi</label>
+                        <input type="date" id="teknisyenIseGiris">
+                    </div>
+                    <div class="form-group">
+                        <label>Durum</label>
+                        <select id="teknisyenDurum">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Pasif">Pasif</option>
+                            <option value="İzinli">İzinli</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notlar</label>
+                    <textarea id="teknisyenNotlar" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Parça Modal -->
+    <div class="modal-overlay" id="parcaModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="parcaModalTitle">Yeni Parça</h2>
+                <button class="modal-close" onclick="closeModal('parcaModal')">&times;</button>
+            </div>
+            <form id="parcaForm">
+                <input type="hidden" id="parcaId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Parça Kodu</label>
+                        <input type="text" id="parcaKodu">
+                    </div>
+                    <div class="form-group">
+                        <label>Parça Adı *</label>
+                        <input type="text" id="parcaAdi" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="parcaKategori" style="flex: 1;">
+                                <option value="">Seçin...</option>
+                            </select>
+                            <button type="button" class="btn btn-secondary" onclick="openModal('kategoriModal')" style="padding: 8px 12px; white-space: nowrap;" title="Yeni kategori ekle">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Marka</label>
+                        <input type="text" id="parcaMarka">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Uyumlu Modeller</label>
+                    <input type="text" id="parcaUyumluModeller" placeholder="Samsung, LG, Arçelik...">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stok Miktarı</label>
+                        <input type="number" id="parcaStokMiktari" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Stok</label>
+                        <input type="number" id="parcaMinStok" value="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Alış Fiyatı (₺)</label>
+                        <input type="number" id="parcaAlisFiyati" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Satış Fiyatı (₺)</label>
+                        <input type="number" id="parcaSatisFiyati" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Raf / Konum</label>
+                    <input type="text" id="parcaRafKonum" placeholder="A-1, B-3...">
+                </div>
+                <div class="form-group">
+                    <label>Notlar</label>
+                    <textarea id="parcaNotlar" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- İş Emri Detay Modal -->
+    <div class="modal-overlay" id="isEmriModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h2>İş Emri Detayı</h2>
+                <button class="modal-close" onclick="closeModal('isEmriModal')">&times;</button>
+            </div>
+            <div id="isEmriDetay">
+            </div>
+        </div>
+    </div>
+
+    <!-- Teknisyen Atama Modal -->
+    <div class="modal-overlay" id="atamaModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Teknisyen Ata</h2>
+                <button class="modal-close" onclick="closeModal('atamaModal')">&times;</button>
+            </div>
+            <form id="atamaForm">
+                <input type="hidden" id="atamaArizaId">
+                <div class="form-group">
+                    <label>Teknisyen Seçin *</label>
+                    <select id="atamaTeknisyen" required>
+                        <option value="">Teknisyen seçin...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Randevu Tarihi</label>
+                        <input type="date" id="atamaRandevuTarih">
+                    </div>
+                    <div class="form-group">
+                        <label>Randevu Saati</label>
+                        <input type="time" id="atamaRandevuSaat">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Ata</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- İş Emri Tamamla Modal -->
+    <div class="modal-overlay" id="tamamlaModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h2>İş Emrini Tamamla</h2>
+                <button class="modal-close" onclick="closeModal('tamamlaModal')">&times;</button>
+            </div>
+            <form id="tamamlaForm">
+                <input type="hidden" id="tamamlaArizaId">
+                <div class="form-group">
+                    <label>Yapılan İşlem *</label>
+                    <textarea id="tamamlaYapilanIslem" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Teknisyen Notu</label>
+                    <textarea id="tamamlaTeknisyenNotu" rows="2"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>İşçilik Tutarı (₺)</label>
+                        <input type="number" id="tamamlaIscilik" step="0.01" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Garanti Kapsamında mı?</label>
+                        <select id="tamamlaGaranti">
+                            <option value="0">Hayır</option>
+                            <option value="1">Evet</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h4 style="margin: 20px 0 10px;">Kullanılan Parçalar</h4>
+                <div id="kullanilanParcalar">
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addParcaSatiri()">+ Parça Ekle</button>
+
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                    <strong>Parça Toplamı: ₺<span id="parcaToplamText">0</span></strong>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Tamamla</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kategori Modal -->
+    <div class="modal-overlay" id="kategoriModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Yeni Kategori Ekle</h2>
+                <button class="modal-close" onclick="closeModal('kategoriModal')">&times;</button>
+            </div>
+            <form id="kategoriForm" onsubmit="handleKategoriSubmit(event)">
+                <div class="form-group">
+                    <label>Kategori Adı *</label>
+                    <input type="text" id="yeniKategoriAdi" required placeholder="Örn: Motor, Termostat...">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('kategoriModal')">İptal</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+            <div style="margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                <h4 style="margin-bottom: 10px; font-size: 14px; color: #6b7280;">Mevcut Kategoriler</h4>
+                <div id="mevcutKategoriler" style="max-height: 200px; overflow-y: auto;">
+                    <p style="color: #9ca3af; font-size: 13px;">Yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fatura Modal -->
+    <div class="modal-overlay" id="faturaModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="faturaModalTitle">Yeni Fatura</h2>
+                <button class="modal-close" onclick="closeModal('faturaModal')">&times;</button>
+            </div>
+            <form id="faturaForm">
+                <input type="hidden" id="faturaId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>İş Emri Seçin</label>
+                        <select id="faturaArizaId" onchange="loadArizaForFatura(this.value)">
+                            <option value="">İş emri seçin...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fatura No *</label>
+                        <input type="text" id="faturaNo" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Müşteri</label>
+                        <input type="text" id="faturaMusteriAdi" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Fatura Tarihi *</label>
+                        <input type="date" id="faturaTarihi" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>İşçilik Tutarı (₺)</label>
+                        <input type="number" id="faturaIscilik" step="0.01" value="0" onchange="calculateFatura()">
+                    </div>
+                    <div class="form-group">
+                        <label>Parça Tutarı (₺)</label>
+                        <input type="number" id="faturaParca" step="0.01" value="0" onchange="calculateFatura()">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>KDV Oranı (%)</label>
+                        <select id="faturaKdvOrani" onchange="calculateFatura()">
+                            <option value="0">%0</option>
+                            <option value="10">%10</option>
+                            <option value="20" selected>%20</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Vade Tarihi</label>
+                        <input type="date" id="faturaVadeTarihi">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Matrah</label>
+                        <input type="text" id="faturaMatrah" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Toplam Tutar</label>
+                        <input type="text" id="faturaToplam" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ödeme Durumu</label>
+                    <select id="faturaOdemeDurumu">
+                        <option value="Ödenmedi">Ödenmedi</option>
+                        <option value="Kısmi Ödendi">Kısmi Ödendi</option>
+                        <option value="Ödendi">Ödendi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notlar</label>
+                    <textarea id="faturaNotlar" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kullanıcı Modal -->
+    <div class="modal-overlay" id="kullaniciModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="kullaniciModalTitle">Yeni Kullanıcı</h2>
+                <button class="modal-close" onclick="closeModal('kullaniciModal')">&times;</button>
+            </div>
+            <form id="kullaniciForm">
+                <input type="hidden" id="kullaniciId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ad Soyad *</label>
+                        <input type="text" id="kullaniciAdSoyad" required>
+                    </div>
+                    <div class="form-group">
+                        <label>E-posta *</label>
+                        <input type="email" id="kullaniciEmail" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Telefon</label>
+                        <input type="tel" id="kullaniciTelefon">
+                    </div>
+                    <div class="form-group">
+                        <label>Şifre *</label>
+                        <input type="password" id="kullaniciPassword" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rol *</label>
+                        <select id="kullaniciRole" required onchange="updateServisDefaultYetkiler()">
+                            <option value="Kullanıcı">Kullanıcı</option>
+                            <option value="Teknisyen">Teknisyen</option>
+                            <option value="Yönetim">Yönetim</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Durum</label>
+                        <select id="kullaniciDurum">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Pasif">Pasif</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:15px;">
+                    <label style="margin-bottom:10px;display:block;">Erişim Yetkileri</label>
+                    <div style="display:flex;gap:8px;margin-bottom:12px;">
+                        <button type="button" class="btn btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="selectAllServisYetkiler()">Tümünü Seç</button>
+                        <button type="button" class="btn btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="deselectAllServisYetkiler()">Tümünü Kaldır</button>
+                    </div>
+                    <div id="yetkilerCheckboxes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:#f8f9fa;padding:15px;border-radius:8px;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="dashboard" style="width:16px;height:16px;"> Dashboard
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="musteriler" style="width:16px;height:16px;"> Müşteriler
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="cihazlar" style="width:16px;height:16px;"> Cihazlar
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="ariza-kayit" style="width:16px;height:16px;"> Arıza Kaydı
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="is-emirleri" style="width:16px;height:16px;"> İş Emirleri
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="teknisyenler" style="width:16px;height:16px;"> Teknisyenler
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="parcalar" style="width:16px;height:16px;"> Parça Yönetimi
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="faturalar" style="width:16px;height:16px;"> Faturalar
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:6px 8px;background:white;border-radius:6px;border:1px solid #e5e5e5;">
+                            <input type="checkbox" name="yetkiler" value="kullanicilar" style="width:16px;height:16px;"> Kullanıcılar
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:15px;">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Global Variables
+        let currentUser = null;
+        let licenseCode = null;
+
+        // Data caches
+        let musterilerData = [];
+        let cihazlarData = [];
+        let teknisyenlerData = [];
+        let arizalarData = [];
+        let parcalarData = [];
+        let faturalarData = [];
+        let kullanicilarData = [];
+
+        // API Base
+        const API_BASE = '/api/servis';
+
+        // Varsayılan yetkiler (role göre)
+        const SERVIS_DEFAULT_YETKILER = {
+            'Yönetim': ['dashboard', 'musteriler', 'cihazlar', 'ariza-kayit', 'is-emirleri', 'teknisyenler', 'parcalar', 'faturalar', 'kullanicilar'],
+            'Teknisyen': ['dashboard', 'is-emirleri', 'parcalar'],
+            'Kullanıcı': ['dashboard']
+        };
+
+        function selectAllServisYetkiler() {
+            document.querySelectorAll('#yetkilerCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = true);
+        }
+
+        function deselectAllServisYetkiler() {
+            document.querySelectorAll('#yetkilerCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+
+        function updateServisDefaultYetkiler() {
+            const role = document.getElementById('kullaniciRole').value;
+            const defaultYetkiler = SERVIS_DEFAULT_YETKILER[role] || [];
+            document.querySelectorAll('#yetkilerCheckboxes input[type="checkbox"]').forEach(cb => {
+                cb.checked = defaultYetkiler.includes(cb.value);
+            });
+        }
+
+        function getSelectedServisYetkiler() {
+            const selected = [];
+            document.querySelectorAll('#yetkilerCheckboxes input[type="checkbox"]:checked').forEach(cb => {
+                selected.push(cb.value);
+            });
+            return selected;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSession();
+            setupEventListeners();
+        });
+
+        function checkSession() {
+            const user = localStorage.getItem('servisUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                licenseCode = currentUser.license_code;
+                showApp();
+            }
+        }
+
+        function setupEventListeners() {
+            // Login form
+            document.getElementById('loginForm').onsubmit = handleLogin;
+
+            // Menu navigation
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.dataset.page;
+                    navigateTo(page);
+                });
+            });
+
+            // Forms
+            document.getElementById('musteriForm').onsubmit = handleMusteriSubmit;
+            document.getElementById('cihazForm').onsubmit = handleCihazSubmit;
+            document.getElementById('teknisyenForm').onsubmit = handleTeknisyenSubmit;
+            document.getElementById('parcaForm').onsubmit = handleParcaSubmit;
+            document.getElementById('arizaKayitForm').onsubmit = handleArizaSubmit;
+            document.getElementById('atamaForm').onsubmit = handleAtamaSubmit;
+            document.getElementById('tamamlaForm').onsubmit = handleTamamlaSubmit;
+            document.getElementById('faturaForm').onsubmit = handleFaturaSubmit;
+            document.getElementById('kullaniciForm').onsubmit = handleKullaniciSubmit;
+        }
+
+        // Login
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(API_BASE + '/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    licenseCode = currentUser.license_code;
+                    localStorage.setItem('servisUser', JSON.stringify(currentUser));
+                    showApp();
+                    showToast('Giriş başarılı!');
+                } else {
+                    showToast(data.message || 'Giriş başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('servisUser');
+            currentUser = null;
+            licenseCode = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+        }
+
+        function showApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+
+            // Show admin menu if admin
+            if (currentUser.role === 'Yönetim') {
+                document.getElementById('adminSection').style.display = 'block';
+            }
+
+            // Load initial data
+            loadDashboard();
+            loadMusteriler();
+            loadTeknisyenler();
+            loadParcalar();
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+            document.querySelectorAll('.page-section').forEach(section => section.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+
+            // Load page data
+            switch(page) {
+                case 'dashboard': loadDashboard(); break;
+                case 'musteriler': loadMusteriler(); break;
+                case 'cihazlar': loadCihazlar(); break;
+                case 'ariza-kayit': loadArizaKayitForm(); break;
+                case 'is-emirleri': loadIsEmirleri(); break;
+                case 'teknisyenler': loadTeknisyenler(); break;
+                case 'parcalar': loadKategoriler(); loadParcalar(); break;
+                case 'faturalar': loadFaturalar(); break;
+                case 'kullanicilar': loadKullanicilar(); break;
+                case 'lisans': loadLisans(); break;
+            }
+        }
+
+        function toggleSection(el) {
+            el.parentElement.classList.toggle('collapsed');
+        }
+
+        // Dashboard
+        async function loadDashboard() {
+            try {
+                const response = await fetch(API_BASE + '/dashboard?license_code=' + licenseCode);
+                const data = await response.json();
+
+                document.getElementById('statBekleyen').textContent = data.bekleyen || 0;
+                document.getElementById('statDevam').textContent = data.devam_eden || 0;
+                document.getElementById('statTamamlanan').textContent = data.tamamlanan || 0;
+                document.getElementById('statTeknisyen').textContent = data.aktif_teknisyen || 0;
+                document.getElementById('statAcil').textContent = data.acil || 0;
+                document.getElementById('statGelir').textContent = '₺' + formatNumber(data.gelir || 0);
+
+                // Today's appointments
+                const tbody = document.getElementById('todayAppointments');
+                if (data.bugun_randevular && data.bugun_randevular.length > 0) {
+                    tbody.innerHTML = data.bugun_randevular.map(r => `
+                        <tr>
+                            <td>${r.randevu_saati || '-'}</td>
+                            <td>${r.musteri_adi}</td>
+                            <td>${r.cihaz_bilgisi || '-'}</td>
+                            <td>${r.ariza_tipi}</td>
+                            <td>${r.teknisyen_adi || 'Atanmadı'}</td>
+                            <td><span class="badge badge-${getDurumBadge(r.durum)}">${r.durum}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#666;">Bugün randevu yok</td></tr>';
+                }
+
+                // Critical stock
+                const stockBody = document.getElementById('criticalStock');
+                if (data.kritik_stok && data.kritik_stok.length > 0) {
+                    stockBody.innerHTML = data.kritik_stok.map(p => `
+                        <tr>
+                            <td>${p.parca_kodu || '-'}</td>
+                            <td>${p.parca_adi}</td>
+                            <td style="color: ${p.stok_miktari <= 0 ? '#e74c3c' : '#e67e22'}; font-weight: 600;">${p.stok_miktari}</td>
+                            <td>${p.min_stok}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    stockBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#666;">Kritik stok yok</td></tr>';
+                }
+            } catch (error) {
+                console.error('Dashboard error:', error);
+            }
+        }
+
+        // Müşteriler
+        async function loadMusteriler() {
+            try {
+                const response = await fetch(API_BASE + '/musteriler?license_code=' + licenseCode);
+                musterilerData = await response.json();
+                renderMusteriler(musterilerData);
+            } catch (error) {
+                console.error('Musteriler error:', error);
+            }
+        }
+
+        function renderMusteriler(data) {
+            const tbody = document.getElementById('musterilerBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#666;">Henüz müşteri kaydı yok</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(m => `
+                <tr>
+                    <td>${m.musteri_kodu || '-'}</td>
+                    <td>${m.musteri_tipi === 'Kurumsal' ? m.firma_adi : m.ad_soyad}</td>
+                    <td><span class="badge badge-${m.musteri_tipi === 'Kurumsal' ? 'primary' : 'info'}">${m.musteri_tipi}</span></td>
+                    <td>${m.telefon}</td>
+                    <td>${m.email || '-'}</td>
+                    <td>${m.il || ''} ${m.ilce || ''}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn edit" onclick="editMusteri(${m.id})" title="Düzenle">✏️</button>
+                            <button class="action-btn delete" onclick="deleteMusteri(${m.id})" title="Sil">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterMusteriler() {
+            const search = document.getElementById('musteriSearch').value.toLowerCase();
+            const tip = document.getElementById('musteriTipiFilter').value;
+
+            const filtered = musterilerData.filter(m => {
+                const name = (m.musteri_tipi === 'Kurumsal' ? m.firma_adi : m.ad_soyad) || '';
+                const matchSearch = name.toLowerCase().includes(search) ||
+                    (m.telefon || '').includes(search) ||
+                    (m.musteri_kodu || '').toLowerCase().includes(search);
+                const matchTip = !tip || m.musteri_tipi === tip;
+                return matchSearch && matchTip;
+            });
+
+            renderMusteriler(filtered);
+        }
+
+        async function handleMusteriSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('musteriId').value;
+            const musteri = {
+                license_code: licenseCode,
+                musteri_kodu: document.getElementById('musteriKodu').value,
+                musteri_tipi: document.getElementById('musteriTipi').value,
+                ad_soyad: document.getElementById('musteriAdSoyad').value,
+                firma_adi: document.getElementById('musteriFirmaAdi').value,
+                telefon: document.getElementById('musteriTelefon').value,
+                telefon2: document.getElementById('musteriTelefon2').value,
+                email: document.getElementById('musteriEmail').value,
+                il: document.getElementById('musteriIl').value,
+                ilce: document.getElementById('musteriIlce').value,
+                adres: document.getElementById('musteriAdres').value,
+                vergi_no: document.getElementById('musteriVergiNo').value,
+                vergi_dairesi: document.getElementById('musteriVergiDairesi').value,
+                notlar: document.getElementById('musteriNotlar').value
+            };
+
+            try {
+                const url = id ? API_BASE + '/musteriler/' + id : API_BASE + '/musteriler';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(musteri)
+                });
+
+                if (response.ok) {
+                    showToast('Müşteri kaydedildi!');
+                    closeModal('musteriModal');
+                    loadMusteriler();
+                } else {
+                    showToast('Kayıt başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function editMusteri(id) {
+            const m = musterilerData.find(x => x.id === id);
+            if (!m) return;
+
+            document.getElementById('musteriModalTitle').textContent = 'Müşteri Düzenle';
+            document.getElementById('musteriId').value = m.id;
+            document.getElementById('musteriTipi').value = m.musteri_tipi;
+            document.getElementById('musteriKodu').value = m.musteri_kodu || '';
+            document.getElementById('musteriAdSoyad').value = m.ad_soyad || '';
+            document.getElementById('musteriFirmaAdi').value = m.firma_adi || '';
+            document.getElementById('musteriTelefon').value = m.telefon || '';
+            document.getElementById('musteriTelefon2').value = m.telefon2 || '';
+            document.getElementById('musteriEmail').value = m.email || '';
+            document.getElementById('musteriIl').value = m.il || '';
+            document.getElementById('musteriIlce').value = m.ilce || '';
+            document.getElementById('musteriAdres').value = m.adres || '';
+            document.getElementById('musteriVergiNo').value = m.vergi_no || '';
+            document.getElementById('musteriVergiDairesi').value = m.vergi_dairesi || '';
+            document.getElementById('musteriNotlar').value = m.notlar || '';
+
+            toggleMusteriFields();
+            openModal('musteriModal');
+        }
+
+        async function deleteMusteri(id) {
+            if (!confirm('Bu müşteriyi silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(API_BASE + '/musteriler/' + id, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('Müşteri silindi!');
+                    loadMusteriler();
+                }
+            } catch (error) {
+                showToast('Silme işlemi başarısız!', 'error');
+            }
+        }
+
+        function toggleMusteriFields() {
+            const tip = document.getElementById('musteriTipi').value;
+            document.getElementById('adSoyadGroup').style.display = tip === 'Bireysel' ? 'block' : 'none';
+            document.getElementById('firmaAdiGroup').style.display = tip === 'Kurumsal' ? 'block' : 'none';
+            document.getElementById('vergiFields').style.display = tip === 'Kurumsal' ? 'flex' : 'none';
+        }
+
+        // Cihazlar
+        async function loadCihazlar() {
+            try {
+                const response = await fetch(API_BASE + '/cihazlar?license_code=' + licenseCode);
+                cihazlarData = await response.json();
+                renderCihazlar(cihazlarData);
+                updateCihazMusteriSelect();
+            } catch (error) {
+                console.error('Cihazlar error:', error);
+            }
+        }
+
+        function renderCihazlar(data) {
+            const tbody = document.getElementById('cihazlarBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#666;">Henüz cihaz kaydı yok</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(c => {
+                const garantiDurum = getGarantiDurum(c.garanti_bitis);
+                return `
+                    <tr>
+                        <td>${c.musteri_adi || 'Bilinmiyor'}</td>
+                        <td>${c.cihaz_tipi}</td>
+                        <td>${c.marka}</td>
+                        <td>${c.model || '-'}</td>
+                        <td>${c.seri_no || '-'}</td>
+                        <td><span class="badge badge-${garantiDurum.badge}">${garantiDurum.text}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn edit" onclick="editCihaz(${c.id})" title="Düzenle">✏️</button>
+                                <button class="action-btn delete" onclick="deleteCihaz(${c.id})" title="Sil">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getGarantiDurum(garantiBitis) {
+            if (!garantiBitis) return { text: 'Belirtilmedi', badge: 'secondary' };
+            const bitis = new Date(garantiBitis);
+            const bugun = new Date();
+            if (bitis > bugun) {
+                return { text: 'Garantili', badge: 'success' };
+            } else {
+                return { text: 'Garanti Bitti', badge: 'danger' };
+            }
+        }
+
+        function filterCihazlar() {
+            const search = document.getElementById('cihazSearch').value.toLowerCase();
+            const tip = document.getElementById('cihazTipiFilter').value;
+
+            const filtered = cihazlarData.filter(c => {
+                const matchSearch = (c.marka || '').toLowerCase().includes(search) ||
+                    (c.model || '').toLowerCase().includes(search) ||
+                    (c.seri_no || '').toLowerCase().includes(search) ||
+                    (c.musteri_adi || '').toLowerCase().includes(search);
+                const matchTip = !tip || c.cihaz_tipi === tip;
+                return matchSearch && matchTip;
+            });
+
+            renderCihazlar(filtered);
+        }
+
+        function updateCihazMusteriSelect() {
+            const select = document.getElementById('cihazMusteriId');
+            select.innerHTML = '<option value="">Müşteri seçin...</option>';
+            musterilerData.forEach(m => {
+                const name = m.musteri_tipi === 'Kurumsal' ? m.firma_adi : m.ad_soyad;
+                select.innerHTML += `<option value="${m.id}">${name}</option>`;
+            });
+        }
+
+        async function handleCihazSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('cihazId').value;
+            const cihaz = {
+                license_code: licenseCode,
+                musteri_id: document.getElementById('cihazMusteriId').value,
+                cihaz_tipi: document.getElementById('cihazTipi').value,
+                marka: document.getElementById('cihazMarka').value,
+                model: document.getElementById('cihazModel').value,
+                seri_no: document.getElementById('cihazSeriNo').value,
+                garanti_bitis: document.getElementById('cihazGarantiBitis').value,
+                kurulum_tarihi: document.getElementById('cihazKurulumTarihi').value,
+                adres: document.getElementById('cihazAdres').value,
+                notlar: document.getElementById('cihazNotlar').value
+            };
+
+            try {
+                const url = id ? API_BASE + '/cihazlar/' + id : API_BASE + '/cihazlar';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cihaz)
+                });
+
+                if (response.ok) {
+                    showToast('Cihaz kaydedildi!');
+                    closeModal('cihazModal');
+                    loadCihazlar();
+                } else {
+                    showToast('Kayıt başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function editCihaz(id) {
+            const c = cihazlarData.find(x => x.id === id);
+            if (!c) return;
+
+            updateCihazMusteriSelect();
+
+            document.getElementById('cihazModalTitle').textContent = 'Cihaz Düzenle';
+            document.getElementById('cihazId').value = c.id;
+            document.getElementById('cihazMusteriId').value = c.musteri_id;
+            document.getElementById('cihazTipi').value = c.cihaz_tipi;
+            document.getElementById('cihazMarka').value = c.marka || '';
+            document.getElementById('cihazModel').value = c.model || '';
+            document.getElementById('cihazSeriNo').value = c.seri_no || '';
+            document.getElementById('cihazGarantiBitis').value = c.garanti_bitis || '';
+            document.getElementById('cihazKurulumTarihi').value = c.kurulum_tarihi || '';
+            document.getElementById('cihazAdres').value = c.adres || '';
+            document.getElementById('cihazNotlar').value = c.notlar || '';
+
+            openModal('cihazModal');
+        }
+
+        async function deleteCihaz(id) {
+            if (!confirm('Bu cihazı silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(API_BASE + '/cihazlar/' + id, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('Cihaz silindi!');
+                    loadCihazlar();
+                }
+            } catch (error) {
+                showToast('Silme işlemi başarısız!', 'error');
+            }
+        }
+
+        // Arıza Kaydı
+        function loadArizaKayitForm() {
+            const select = document.getElementById('arizaMusteri');
+            select.innerHTML = '<option value="">Müşteri seçin...</option>';
+            musterilerData.forEach(m => {
+                const name = m.musteri_tipi === 'Kurumsal' ? m.firma_adi : m.ad_soyad;
+                select.innerHTML += `<option value="${m.id}">${name} - ${m.telefon}</option>`;
+            });
+
+            document.getElementById('arizaCihaz').innerHTML = '<option value="">Önce müşteri seçin...</option>';
+        }
+
+        async function loadMusteriCihazlar(musteriId) {
+            if (!musteriId) {
+                document.getElementById('arizaCihaz').innerHTML = '<option value="">Önce müşteri seçin...</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE + '/cihazlar?license_code=' + licenseCode + '&musteri_id=' + musteriId);
+                const cihazlar = await response.json();
+
+                const select = document.getElementById('arizaCihaz');
+                if (cihazlar.length === 0) {
+                    select.innerHTML = '<option value="">Bu müşteriye ait cihaz yok</option>';
+                } else {
+                    select.innerHTML = '<option value="">Cihaz seçin...</option>';
+                    cihazlar.forEach(c => {
+                        select.innerHTML += `<option value="${c.id}">${c.cihaz_tipi} - ${c.marka} ${c.model || ''}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Cihaz load error:', error);
+            }
+        }
+
+        async function handleArizaSubmit(e) {
+            e.preventDefault();
+
+            const ariza = {
+                license_code: licenseCode,
+                musteri_id: document.getElementById('arizaMusteri').value,
+                cihaz_id: document.getElementById('arizaCihaz').value,
+                ariza_tipi: document.getElementById('arizaTipi').value,
+                oncelik: document.getElementById('arizaOncelik').value,
+                ariza_tanimi: document.getElementById('arizaTanim').value,
+                randevu_tarihi: document.getElementById('arizaRandevuTarih').value,
+                randevu_saati: document.getElementById('arizaRandevuSaat').value,
+                musteri_notu: document.getElementById('arizaMusteriNotu').value
+            };
+
+            try {
+                const response = await fetch(API_BASE + '/arizalar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ariza)
+                });
+
+                if (response.ok) {
+                    showToast('Arıza kaydı oluşturuldu!');
+                    document.getElementById('arizaKayitForm').reset();
+                    navigateTo('is-emirleri');
+                } else {
+                    showToast('Kayıt başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        // İş Emirleri
+        async function loadIsEmirleri() {
+            try {
+                const response = await fetch(API_BASE + '/arizalar?license_code=' + licenseCode);
+                arizalarData = await response.json();
+                renderIsEmirleri(arizalarData);
+            } catch (error) {
+                console.error('Is emirleri error:', error);
+            }
+        }
+
+        function renderIsEmirleri(data) {
+            const tbody = document.getElementById('isEmirleriBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#666;">Henüz iş emri yok</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(a => `
+                <tr>
+                    <td><strong>${a.ariza_no}</strong></td>
+                    <td>${a.musteri_adi}</td>
+                    <td>${a.cihaz_bilgisi || '-'}</td>
+                    <td>${a.ariza_tipi}</td>
+                    <td><span class="badge priority-${a.oncelik.toLowerCase()}">${a.oncelik}</span></td>
+                    <td>${a.teknisyen_adi || '<span style="color:#999;">Atanmadı</span>'}</td>
+                    <td>${a.randevu_tarihi ? formatDate(a.randevu_tarihi) + ' ' + (a.randevu_saati || '') : '-'}</td>
+                    <td><span class="badge badge-${getDurumBadge(a.durum)}">${a.durum}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn view" onclick="viewIsEmri(${a.id})" title="Detay">👁️</button>
+                            ${a.durum === 'Beklemede' ? `<button class="action-btn edit" onclick="openAtamaModal(${a.id})" title="Teknisyen Ata">👷</button>` : ''}
+                            ${['Atandı', 'Yolda', 'İşlemde'].includes(a.durum) ? `<button class="action-btn view" onclick="updateDurum(${a.id}, '${getNextDurum(a.durum)}')" title="${getNextDurum(a.durum)}">${getNextDurumIcon(a.durum)}</button>` : ''}
+                            ${a.durum === 'İşlemde' ? `<button class="action-btn edit" onclick="openTamamlaModal(${a.id})" title="Tamamla">✅</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getDurumBadge(durum) {
+            const badges = {
+                'Beklemede': 'warning',
+                'Atandı': 'info',
+                'Yolda': 'primary',
+                'İşlemde': 'info',
+                'Tamamlandı': 'success',
+                'İptal': 'danger'
+            };
+            return badges[durum] || 'secondary';
+        }
+
+        function getNextDurum(durum) {
+            const next = {
+                'Atandı': 'Yolda',
+                'Yolda': 'İşlemde',
+                'İşlemde': 'Tamamlandı'
+            };
+            return next[durum] || durum;
+        }
+
+        function getNextDurumIcon(durum) {
+            const icons = {
+                'Atandı': '🚗',
+                'Yolda': '🔧',
+                'İşlemde': '✅'
+            };
+            return icons[durum] || '➡️';
+        }
+
+        function filterIsEmirleri() {
+            const search = document.getElementById('isEmriSearch').value.toLowerCase();
+            const durum = document.getElementById('isEmriDurumFilter').value;
+            const oncelik = document.getElementById('isEmriOncelikFilter').value;
+
+            const filtered = arizalarData.filter(a => {
+                const matchSearch = (a.ariza_no || '').toLowerCase().includes(search) ||
+                    (a.musteri_adi || '').toLowerCase().includes(search);
+                const matchDurum = !durum || a.durum === durum;
+                const matchOncelik = !oncelik || a.oncelik === oncelik;
+                return matchSearch && matchDurum && matchOncelik;
+            });
+
+            renderIsEmirleri(filtered);
+        }
+
+        async function viewIsEmri(id) {
+            const a = arizalarData.find(x => x.id === id);
+            if (!a) return;
+
+            document.getElementById('isEmriDetay').innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #11998e;">Arıza Bilgileri</h4>
+                        <p><strong>İş Emri No:</strong> ${a.ariza_no}</p>
+                        <p><strong>Arıza Tipi:</strong> ${a.ariza_tipi}</p>
+                        <p><strong>Öncelik:</strong> <span class="badge priority-${a.oncelik.toLowerCase()}">${a.oncelik}</span></p>
+                        <p><strong>Durum:</strong> <span class="badge badge-${getDurumBadge(a.durum)}">${a.durum}</span></p>
+                        <p><strong>Arıza Tanımı:</strong> ${a.ariza_tanimi || '-'}</p>
+                        <p><strong>Yapılan İşlem:</strong> ${a.yapilan_islem || '-'}</p>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #11998e;">Müşteri & Cihaz</h4>
+                        <p><strong>Müşteri:</strong> ${a.musteri_adi}</p>
+                        <p><strong>Telefon:</strong> ${a.musteri_telefon || '-'}</p>
+                        <p><strong>Cihaz:</strong> ${a.cihaz_bilgisi || '-'}</p>
+                    </div>
+                </div>
+                <hr style="margin: 20px 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #11998e;">Randevu & Teknisyen</h4>
+                        <p><strong>Teknisyen:</strong> ${a.teknisyen_adi || 'Atanmadı'}</p>
+                        <p><strong>Randevu:</strong> ${a.randevu_tarihi ? formatDate(a.randevu_tarihi) + ' ' + (a.randevu_saati || '') : '-'}</p>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #11998e;">Ücret</h4>
+                        <p><strong>İşçilik:</strong> ₺${formatNumber(a.iscilik_tutari || 0)}</p>
+                        <p><strong>Parça:</strong> ₺${formatNumber(a.parca_tutari || 0)}</p>
+                        <p><strong>Toplam:</strong> ₺${formatNumber(a.toplam_tutar || 0)}</p>
+                        <p><strong>Garanti:</strong> ${a.garanti_kapsaminda ? 'Evet' : 'Hayır'}</p>
+                    </div>
+                </div>
+            `;
+
+            openModal('isEmriModal');
+        }
+
+        function openAtamaModal(id) {
+            document.getElementById('atamaArizaId').value = id;
+
+            const select = document.getElementById('atamaTeknisyen');
+            select.innerHTML = '<option value="">Teknisyen seçin...</option>';
+            teknisyenlerData.filter(t => t.durum === 'Aktif').forEach(t => {
+                select.innerHTML += `<option value="${t.id}">${t.ad_soyad} - ${t.uzmanlik_alani || 'Genel'}</option>`;
+            });
+
+            const ariza = arizalarData.find(a => a.id === id);
+            if (ariza) {
+                document.getElementById('atamaRandevuTarih').value = ariza.randevu_tarihi || '';
+                document.getElementById('atamaRandevuSaat').value = ariza.randevu_saati || '';
+            }
+
+            openModal('atamaModal');
+        }
+
+        async function handleAtamaSubmit(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('atamaArizaId').value;
+            const data = {
+                teknisyen_id: document.getElementById('atamaTeknisyen').value,
+                randevu_tarihi: document.getElementById('atamaRandevuTarih').value,
+                randevu_saati: document.getElementById('atamaRandevuSaat').value
+            };
+
+            try {
+                const response = await fetch(API_BASE + '/arizalar/' + id + '/ata', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showToast('Teknisyen atandı!');
+                    closeModal('atamaModal');
+                    loadIsEmirleri();
+                } else {
+                    showToast('Atama başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        async function updateDurum(id, yeniDurum) {
+            try {
+                const response = await fetch(API_BASE + '/arizalar/' + id + '/durum', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ durum: yeniDurum })
+                });
+
+                if (response.ok) {
+                    showToast('Durum güncellendi: ' + yeniDurum);
+                    loadIsEmirleri();
+                }
+            } catch (error) {
+                showToast('Güncelleme başarısız!', 'error');
+            }
+        }
+
+        function openTamamlaModal(id) {
+            document.getElementById('tamamlaArizaId').value = id;
+            document.getElementById('tamamlaYapilanIslem').value = '';
+            document.getElementById('tamamlaTeknisyenNotu').value = '';
+            document.getElementById('tamamlaIscilik').value = '0';
+            document.getElementById('tamamlaGaranti').value = '0';
+            document.getElementById('kullanilanParcalar').innerHTML = '';
+            document.getElementById('parcaToplamText').textContent = '0';
+
+            openModal('tamamlaModal');
+        }
+
+        function addParcaSatiri() {
+            const container = document.getElementById('kullanilanParcalar');
+            const index = container.children.length;
+
+            const row = document.createElement('div');
+            row.className = 'form-row';
+            row.style.marginBottom = '10px';
+            row.innerHTML = `
+                <div class="form-group" style="flex: 2;">
+                    <select onchange="updateParcaFiyat(this, ${index})">
+                        <option value="">Parça seçin...</option>
+                        ${parcalarData.map(p => `<option value="${p.id}" data-fiyat="${p.satis_fiyati}">${p.parca_adi} (Stok: ${p.stok_miktari})</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <input type="number" value="1" min="1" onchange="updateParcaToplam()">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <input type="number" step="0.01" value="0" readonly id="parcaFiyat${index}">
+                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); updateParcaToplam();">×</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function updateParcaFiyat(select, index) {
+            const option = select.options[select.selectedIndex];
+            const fiyat = option.dataset.fiyat || 0;
+            document.getElementById('parcaFiyat' + index).value = fiyat;
+            updateParcaToplam();
+        }
+
+        function updateParcaToplam() {
+            let toplam = 0;
+            const rows = document.querySelectorAll('#kullanilanParcalar .form-row');
+            rows.forEach(row => {
+                const miktar = parseFloat(row.querySelectorAll('input')[0].value) || 0;
+                const fiyat = parseFloat(row.querySelectorAll('input')[1].value) || 0;
+                toplam += miktar * fiyat;
+            });
+            document.getElementById('parcaToplamText').textContent = formatNumber(toplam);
+        }
+
+        async function handleTamamlaSubmit(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('tamamlaArizaId').value;
+
+            // Collect used parts
+            const parcalar = [];
+            const rows = document.querySelectorAll('#kullanilanParcalar .form-row');
+            rows.forEach(row => {
+                const select = row.querySelector('select');
+                const parcaId = select.value;
+                if (parcaId) {
+                    const miktar = parseFloat(row.querySelectorAll('input')[0].value) || 0;
+                    const fiyat = parseFloat(row.querySelectorAll('input')[1].value) || 0;
+                    parcalar.push({
+                        parca_id: parcaId,
+                        miktar: miktar,
+                        birim_fiyat: fiyat
+                    });
+                }
+            });
+
+            const data = {
+                yapilan_islem: document.getElementById('tamamlaYapilanIslem').value,
+                teknisyen_notu: document.getElementById('tamamlaTeknisyenNotu').value,
+                iscilik_tutari: parseFloat(document.getElementById('tamamlaIscilik').value) || 0,
+                garanti_kapsaminda: document.getElementById('tamamlaGaranti').value === '1',
+                parcalar: parcalar
+            };
+
+            try {
+                const response = await fetch(API_BASE + '/arizalar/' + id + '/tamamla', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showToast('İş emri tamamlandı!');
+                    closeModal('tamamlaModal');
+                    loadIsEmirleri();
+                    loadParcalar();
+                } else {
+                    showToast('Tamamlama başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        // Teknisyenler
+        async function loadTeknisyenler() {
+            try {
+                const response = await fetch(API_BASE + '/teknisyenler?license_code=' + licenseCode);
+                teknisyenlerData = await response.json();
+                renderTeknisyenler(teknisyenlerData);
+            } catch (error) {
+                console.error('Teknisyenler error:', error);
+            }
+        }
+
+        function renderTeknisyenler(data) {
+            const tbody = document.getElementById('teknisyenlerBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#666;">Henüz teknisyen kaydı yok</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(t => `
+                <tr>
+                    <td><strong>${t.ad_soyad}</strong></td>
+                    <td>${t.telefon || '-'}</td>
+                    <td>${t.email || '-'}</td>
+                    <td>${t.uzmanlik_alani || '-'}</td>
+                    <td>${t.bolge || '-'}</td>
+                    <td><span class="badge badge-${t.durum === 'Aktif' ? 'success' : 'secondary'}">${t.durum}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn edit" onclick="editTeknisyen(${t.id})" title="Düzenle">✏️</button>
+                            <button class="action-btn delete" onclick="deleteTeknisyen(${t.id})" title="Sil">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterTeknisyenler() {
+            const search = document.getElementById('teknisyenSearch').value.toLowerCase();
+            const filtered = teknisyenlerData.filter(t =>
+                (t.ad_soyad || '').toLowerCase().includes(search) ||
+                (t.uzmanlik_alani || '').toLowerCase().includes(search)
+            );
+            renderTeknisyenler(filtered);
+        }
+
+        async function handleTeknisyenSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('teknisyenId').value;
+            const teknisyen = {
+                license_code: licenseCode,
+                ad_soyad: document.getElementById('teknisyenAdSoyad').value,
+                telefon: document.getElementById('teknisyenTelefon').value,
+                email: document.getElementById('teknisyenEmail').value,
+                uzmanlik_alani: document.getElementById('teknisyenUzmanlik').value,
+                bolge: document.getElementById('teknisyenBolge').value,
+                maas: parseFloat(document.getElementById('teknisyenMaas').value) || 0,
+                ise_giris: document.getElementById('teknisyenIseGiris').value,
+                durum: document.getElementById('teknisyenDurum').value,
+                notlar: document.getElementById('teknisyenNotlar').value
+            };
+
+            try {
+                const url = id ? API_BASE + '/teknisyenler/' + id : API_BASE + '/teknisyenler';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(teknisyen)
+                });
+
+                if (response.ok) {
+                    showToast('Teknisyen kaydedildi!');
+                    closeModal('teknisyenModal');
+                    loadTeknisyenler();
+                } else {
+                    showToast('Kayıt başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function editTeknisyen(id) {
+            const t = teknisyenlerData.find(x => x.id === id);
+            if (!t) return;
+
+            document.getElementById('teknisyenModalTitle').textContent = 'Teknisyen Düzenle';
+            document.getElementById('teknisyenId').value = t.id;
+            document.getElementById('teknisyenAdSoyad').value = t.ad_soyad || '';
+            document.getElementById('teknisyenTelefon').value = t.telefon || '';
+            document.getElementById('teknisyenEmail').value = t.email || '';
+            document.getElementById('teknisyenUzmanlik').value = t.uzmanlik_alani || '';
+            document.getElementById('teknisyenBolge').value = t.bolge || '';
+            document.getElementById('teknisyenMaas').value = t.maas || '';
+            document.getElementById('teknisyenIseGiris').value = t.ise_giris || '';
+            document.getElementById('teknisyenDurum').value = t.durum || 'Aktif';
+            document.getElementById('teknisyenNotlar').value = t.notlar || '';
+
+            openModal('teknisyenModal');
+        }
+
+        async function deleteTeknisyen(id) {
+            if (!confirm('Bu teknisyeni silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(API_BASE + '/teknisyenler/' + id, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('Teknisyen silindi!');
+                    loadTeknisyenler();
+                }
+            } catch (error) {
+                showToast('Silme işlemi başarısız!', 'error');
+            }
+        }
+
+        // Parçalar
+        let kategorilerData = [];
+        const varsayilanKategoriler = ['Kompresör', 'Fan Motoru', 'Elektronik Kart', 'Sensör', 'Filtre', 'Pompa', 'Diğer'];
+
+        async function loadKategoriler() {
+            try {
+                const response = await fetch(API_BASE + '/parca-kategoriler?license_code=' + licenseCode);
+                kategorilerData = await response.json();
+
+                // Eğer hiç kategori yoksa varsayılanları ekle
+                if (kategorilerData.length === 0) {
+                    for (const kat of varsayilanKategoriler) {
+                        await fetch(API_BASE + '/parca-kategoriler', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ license_code: licenseCode, kategori_adi: kat, varsayilan: 1 })
+                        });
+                    }
+                    // Tekrar yükle
+                    const response2 = await fetch(API_BASE + '/parca-kategoriler?license_code=' + licenseCode);
+                    kategorilerData = await response2.json();
+                }
+
+                updateKategoriDropdowns();
+            } catch (error) {
+                console.error('Kategoriler error:', error);
+            }
+        }
+
+        function updateKategoriDropdowns() {
+            // Parça ekleme/düzenleme dropdown
+            const parcaKategori = document.getElementById('parcaKategori');
+            const currentValue = parcaKategori.value;
+            parcaKategori.innerHTML = '<option value="">Seçin...</option>';
+            kategorilerData.forEach(k => {
+                parcaKategori.innerHTML += `<option value="${k.kategori_adi}">${k.kategori_adi}</option>`;
+            });
+            if (currentValue) parcaKategori.value = currentValue;
+
+            // Filtre dropdown
+            const filterDropdown = document.getElementById('parcaKategoriFilter');
+            const filterValue = filterDropdown.value;
+            filterDropdown.innerHTML = '<option value="">Tüm Kategoriler</option>';
+            kategorilerData.forEach(k => {
+                filterDropdown.innerHTML += `<option value="${k.kategori_adi}">${k.kategori_adi}</option>`;
+            });
+            if (filterValue) filterDropdown.value = filterValue;
+
+            // Modal'daki mevcut kategoriler listesi
+            renderMevcutKategoriler();
+        }
+
+        function renderMevcutKategoriler() {
+            const container = document.getElementById('mevcutKategoriler');
+            if (kategorilerData.length === 0) {
+                container.innerHTML = '<p style="color: #9ca3af; font-size: 13px;">Henüz kategori yok</p>';
+                return;
+            }
+            container.innerHTML = kategorilerData.map(k => {
+                const isDefault = k.varsayilan === 1;
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-size: 14px;">${k.kategori_adi} ${isDefault ? '<span style="font-size: 11px; color: #9ca3af;">(varsayılan)</span>' : ''}</span>
+                        ${!isDefault ? `<button type="button" onclick="deleteKategori(${k.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px;" title="Sil">&times;</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function handleKategoriSubmit(e) {
+            e.preventDefault();
+            const kategoriAdi = document.getElementById('yeniKategoriAdi').value.trim();
+            if (!kategoriAdi) return;
+
+            try {
+                const response = await fetch(API_BASE + '/parca-kategoriler', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ license_code: licenseCode, kategori_adi: kategoriAdi, varsayilan: 0 })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Kategori eklendi!');
+                    document.getElementById('yeniKategoriAdi').value = '';
+                    await loadKategoriler();
+                    // Yeni eklenen kategoriyi seçili yap
+                    document.getElementById('parcaKategori').value = kategoriAdi;
+                } else {
+                    showToast(result.message || 'Kategori eklenemedi!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        async function deleteKategori(id) {
+            if (!confirm('Bu kategoriyi silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(API_BASE + '/parca-kategoriler/' + id, { method: 'DELETE' });
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Kategori silindi!');
+                    await loadKategoriler();
+                } else {
+                    showToast(result.message || 'Kategori silinemedi!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        async function loadParcalar() {
+            try {
+                const response = await fetch(API_BASE + '/parcalar?license_code=' + licenseCode);
+                parcalarData = await response.json();
+                renderParcalar(parcalarData);
+            } catch (error) {
+                console.error('Parcalar error:', error);
+            }
+        }
+
+        function renderParcalar(data) {
+            const tbody = document.getElementById('parcalarBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#666;">Henüz parça kaydı yok</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(p => {
+                const stokClass = p.stok_miktari <= p.min_stok ? 'color: #e74c3c; font-weight: 600;' : '';
+                return `
+                    <tr>
+                        <td>${p.parca_kodu || '-'}</td>
+                        <td><strong>${p.parca_adi}</strong></td>
+                        <td>${p.kategori || '-'}</td>
+                        <td>${p.marka || '-'}</td>
+                        <td style="${stokClass}">${p.stok_miktari}</td>
+                        <td>${p.min_stok}</td>
+                        <td>₺${formatNumber(p.alis_fiyati || 0)}</td>
+                        <td>₺${formatNumber(p.satis_fiyati || 0)}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn edit" onclick="editParca(${p.id})" title="Düzenle">✏️</button>
+                                <button class="action-btn delete" onclick="deleteParca(${p.id})" title="Sil">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterParcalar() {
+            const search = document.getElementById('parcaSearch').value.toLowerCase();
+            const kategori = document.getElementById('parcaKategoriFilter').value;
+
+            const filtered = parcalarData.filter(p => {
+                const matchSearch = (p.parca_adi || '').toLowerCase().includes(search) ||
+                    (p.parca_kodu || '').toLowerCase().includes(search);
+                const matchKategori = !kategori || p.kategori === kategori;
+                return matchSearch && matchKategori;
+            });
+
+            renderParcalar(filtered);
+        }
+
+        async function handleParcaSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('parcaId').value;
+            const parca = {
+                license_code: licenseCode,
+                parca_kodu: document.getElementById('parcaKodu').value,
+                parca_adi: document.getElementById('parcaAdi').value,
+                kategori: document.getElementById('parcaKategori').value,
+                marka: document.getElementById('parcaMarka').value,
+                uyumlu_modeller: document.getElementById('parcaUyumluModeller').value,
+                stok_miktari: parseFloat(document.getElementById('parcaStokMiktari').value) || 0,
+                min_stok: parseFloat(document.getElementById('parcaMinStok').value) || 0,
+                alis_fiyati: parseFloat(document.getElementById('parcaAlisFiyati').value) || 0,
+                satis_fiyati: parseFloat(document.getElementById('parcaSatisFiyati').value) || 0,
+                raf_konum: document.getElementById('parcaRafKonum').value,
+                notlar: document.getElementById('parcaNotlar').value
+            };
+
+            try {
+                const url = id ? API_BASE + '/parcalar/' + id : API_BASE + '/parcalar';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(parca)
+                });
+
+                if (response.ok) {
+                    showToast('Parça kaydedildi!');
+                    closeModal('parcaModal');
+                    loadParcalar();
+                } else {
+                    showToast('Kayıt başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function editParca(id) {
+            const p = parcalarData.find(x => x.id === id);
+            if (!p) return;
+
+            document.getElementById('parcaModalTitle').textContent = 'Parça Düzenle';
+            document.getElementById('parcaId').value = p.id;
+            document.getElementById('parcaKodu').value = p.parca_kodu || '';
+            document.getElementById('parcaAdi').value = p.parca_adi || '';
+            document.getElementById('parcaKategori').value = p.kategori || '';
+            document.getElementById('parcaMarka').value = p.marka || '';
+            document.getElementById('parcaUyumluModeller').value = p.uyumlu_modeller || '';
+            document.getElementById('parcaStokMiktari').value = p.stok_miktari || 0;
+            document.getElementById('parcaMinStok').value = p.min_stok || 0;
+            document.getElementById('parcaAlisFiyati').value = p.alis_fiyati || 0;
+            document.getElementById('parcaSatisFiyati').value = p.satis_fiyati || 0;
+            document.getElementById('parcaRafKonum').value = p.raf_konum || '';
+            document.getElementById('parcaNotlar').value = p.notlar || '';
+
+            openModal('parcaModal');
+        }
+
+        async function deleteParca(id) {
+            if (!confirm('Bu parçayı silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(API_BASE + '/parcalar/' + id, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('Parça silindi!');
+                    loadParcalar();
+                }
+            } catch (error) {
+                showToast('Silme işlemi başarısız!', 'error');
+            }
+        }
+
+        // Faturalar
+        async function loadFaturalar() {
+            try {
+                const response = await fetch(API_BASE + '/faturalar?license_code=' + licenseCode);
+                faturalarData = await response.json();
+                renderFaturalar(faturalarData);
+                loadTamamlananArizalar();
+            } catch (error) {
+                console.error('Faturalar error:', error);
+            }
+        }
+
+        function renderFaturalar(data) {
+            const tbody = document.getElementById('faturalarBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#666;">Henüz fatura kaydı yok</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(f => `
+                <tr>
+                    <td><strong>${f.fatura_no}</strong></td>
+                    <td>${f.musteri_adi || '-'}</td>
+                    <td>${f.ariza_no || '-'}</td>
+                    <td>${formatDate(f.fatura_tarihi)}</td>
+                    <td>₺${formatNumber(f.iscilik_tutari || 0)}</td>
+                    <td>₺${formatNumber(f.parca_tutari || 0)}</td>
+                    <td><strong>₺${formatNumber(f.toplam_tutar || 0)}</strong></td>
+                    <td><span class="badge badge-${f.odeme_durumu === 'Ödendi' ? 'success' : f.odeme_durumu === 'Kısmi Ödendi' ? 'warning' : 'danger'}">${f.odeme_durumu}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn edit" onclick="editFatura(${f.id})" title="Düzenle">✏️</button>
+                            <button class="action-btn delete" onclick="deleteFatura(${f.id})" title="Sil">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterFaturalar() {
+            const search = document.getElementById('faturaSearch').value.toLowerCase();
+            const odeme = document.getElementById('faturaOdemeFilter').value;
+
+            const filtered = faturalarData.filter(f => {
+                const matchSearch = (f.fatura_no || '').toLowerCase().includes(search) ||
+                    (f.musteri_adi || '').toLowerCase().includes(search);
+                const matchOdeme = !odeme || f.odeme_durumu === odeme;
+                return matchSearch && matchOdeme;
+            });
+
+            renderFaturalar(filtered);
+        }
+
+        async function loadTamamlananArizalar() {
+            try {
+                const response = await fetch(API_BASE + '/arizalar?license_code=' + licenseCode + '&durum=Tamamlandı');
+                const tamamlanan = await response.json();
+
+                const select = document.getElementById('faturaArizaId');
+                select.innerHTML = '<option value="">İş emri seçin...</option>';
+                tamamlanan.forEach(a => {
+                    select.innerHTML += `<option value="${a.id}">${a.ariza_no} - ${a.musteri_adi}</option>`;
+                });
+            } catch (error) {
+                console.error('Tamamlanan arizalar error:', error);
+            }
+        }
+
+        async function loadArizaForFatura(arizaId) {
+            if (!arizaId) return;
+
+            const ariza = arizalarData.find(a => a.id === parseInt(arizaId));
+            if (ariza) {
+                document.getElementById('faturaMusteriAdi').value = ariza.musteri_adi || '';
+                document.getElementById('faturaIscilik').value = ariza.iscilik_tutari || 0;
+                document.getElementById('faturaParca').value = ariza.parca_tutari || 0;
+                calculateFatura();
+            }
+        }
+
+        function calculateFatura() {
+            const iscilik = parseFloat(document.getElementById('faturaIscilik').value) || 0;
+            const parca = parseFloat(document.getElementById('faturaParca').value) || 0;
+            const kdvOrani = parseFloat(document.getElementById('faturaKdvOrani').value) || 0;
+
+            const matrah = iscilik + parca;
+            const kdv = matrah * kdvOrani / 100;
+            const toplam = matrah + kdv;
+
+            document.getElementById('faturaMatrah').value = '₺' + formatNumber(matrah);
+            document.getElementById('faturaToplam').value = '₺' + formatNumber(toplam);
+        }
+
+        async function handleFaturaSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('faturaId').value;
+
+            const iscilik = parseFloat(document.getElementById('faturaIscilik').value) || 0;
+            const parca = parseFloat(document.getElementById('faturaParca').value) || 0;
+            const kdvOrani = parseInt(document.getElementById('faturaKdvOrani').value) || 0;
+            const matrah = iscilik + parca;
+            const kdvTutari = matrah * kdvOrani / 100;
+            const toplam = matrah + kdvTutari;
+
+            const fatura = {
+                license_code: licenseCode,
+                fatura_no: document.getElementById('faturaNo').value,
+                ariza_id: document.getElementById('faturaArizaId').value || null,
+                musteri_adi: document.getElementById('faturaMusteriAdi').value,
+                fatura_tarihi: document.getElementById('faturaTarihi').value,
+                vade_tarihi: document.getElementById('faturaVadeTarihi').value,
+                iscilik_tutari: iscilik,
+                parca_tutari: parca,
+                matrah: matrah,
+                kdv_orani: kdvOrani,
+                kdv_tutari: kdvTutari,
+                toplam_tutar: toplam,
+                odeme_durumu: document.getElementById('faturaOdemeDurumu').value,
+                notlar: document.getElementById('faturaNotlar').value
+            };
+
+            try {
+                const url = id ? API_BASE + '/faturalar/' + id : API_BASE + '/faturalar';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fatura)
+                });
+
+                if (response.ok) {
+                    showToast('Fatura kaydedildi!');
+                    closeModal('faturaModal');
+                    loadFaturalar();
+                } else {
+                    showToast('Kayıt başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function editFatura(id) {
+            const f = faturalarData.find(x => x.id === id);
+            if (!f) return;
+
+            document.getElementById('faturaModalTitle').textContent = 'Fatura Düzenle';
+            document.getElementById('faturaId').value = f.id;
+            document.getElementById('faturaNo').value = f.fatura_no || '';
+            document.getElementById('faturaArizaId').value = f.ariza_id || '';
+            document.getElementById('faturaMusteriAdi').value = f.musteri_adi || '';
+            document.getElementById('faturaTarihi').value = f.fatura_tarihi || '';
+            document.getElementById('faturaVadeTarihi').value = f.vade_tarihi || '';
+            document.getElementById('faturaIscilik').value = f.iscilik_tutari || 0;
+            document.getElementById('faturaParca').value = f.parca_tutari || 0;
+            document.getElementById('faturaKdvOrani').value = f.kdv_orani || 20;
+            document.getElementById('faturaOdemeDurumu').value = f.odeme_durumu || 'Ödenmedi';
+            document.getElementById('faturaNotlar').value = f.notlar || '';
+
+            calculateFatura();
+            openModal('faturaModal');
+        }
+
+        async function deleteFatura(id) {
+            if (!confirm('Bu faturayı silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(API_BASE + '/faturalar/' + id, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('Fatura silindi!');
+                    loadFaturalar();
+                }
+            } catch (error) {
+                showToast('Silme işlemi başarısız!', 'error');
+            }
+        }
+
+        // Kullanıcılar
+        async function loadKullanicilar() {
+            try {
+                const response = await fetch(API_BASE + '/users?license_code=' + licenseCode);
+                kullanicilarData = await response.json();
+                renderKullanicilar(kullanicilarData);
+            } catch (error) {
+                console.error('Kullanicilar error:', error);
+            }
+        }
+
+        function renderKullanicilar(data) {
+            const tbody = document.getElementById('kullanicilarBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#666;">Henüz kullanıcı kaydı yok</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(u => `
+                <tr>
+                    <td><strong>${u.ad_soyad || '-'}</strong></td>
+                    <td>${u.email}</td>
+                    <td>${u.telefon || '-'}</td>
+                    <td>
+                        <select class="role-select" onchange="changeUserRole(${u.id}, this.value)" style="padding:5px 10px;border-radius:5px;border:1px solid #ddd;background:${u.role === 'Yönetim' ? '#667eea' : '#17a2b8'};color:white;cursor:pointer;">
+                            <option value="Yönetim" ${u.role === 'Yönetim' ? 'selected' : ''}>Yönetim</option>
+                            <option value="Teknisyen" ${u.role === 'Teknisyen' ? 'selected' : ''}>Teknisyen</option>
+                            <option value="Kullanıcı" ${u.role === 'Kullanıcı' ? 'selected' : ''}>Kullanıcı</option>
+                        </select>
+                    </td>
+                    <td><span class="badge badge-${u.durum === 'Aktif' ? 'success' : 'secondary'}">${u.durum}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn edit" onclick="editKullanici(${u.id})" title="Düzenle">✏️</button>
+                            <button class="action-btn delete" onclick="deleteKullanici(${u.id})" title="Sil">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function changeUserRole(userId, newRole) {
+            try {
+                const response = await fetch(API_BASE + '/users/' + userId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role: newRole, license_code: licenseCode })
+                });
+                if (response.ok) {
+                    showToast('Rol güncellendi', 'success');
+                    loadKullanicilar();
+                } else {
+                    showToast('Rol güncellenemedi', 'error');
+                }
+            } catch (error) {
+                showToast('Hata oluştu', 'error');
+            }
+        }
+
+        async function handleKullaniciSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('kullaniciId').value;
+            const kullanici = {
+                license_code: licenseCode,
+                ad_soyad: document.getElementById('kullaniciAdSoyad').value,
+                email: document.getElementById('kullaniciEmail').value,
+                telefon: document.getElementById('kullaniciTelefon').value,
+                password: document.getElementById('kullaniciPassword').value,
+                role: document.getElementById('kullaniciRole').value,
+                durum: document.getElementById('kullaniciDurum').value,
+                yetkiler: JSON.stringify(getSelectedServisYetkiler())
+            };
+
+            try {
+                const url = id ? API_BASE + '/users/' + id : API_BASE + '/users';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(kullanici)
+                });
+
+                if (response.ok) {
+                    showToast('Kullanıcı kaydedildi!');
+                    closeModal('kullaniciModal');
+                    document.getElementById('kullaniciForm').reset();
+                    deselectAllServisYetkiler();
+                    loadKullanicilar();
+                } else {
+                    showToast('Kayıt başarısız!', 'error');
+                }
+            } catch (error) {
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function editKullanici(id) {
+            const u = kullanicilarData.find(x => x.id === id);
+            if (!u) return;
+
+            document.getElementById('kullaniciModalTitle').textContent = 'Kullanıcı Düzenle';
+            document.getElementById('kullaniciId').value = u.id;
+            document.getElementById('kullaniciAdSoyad').value = u.ad_soyad || '';
+            document.getElementById('kullaniciEmail').value = u.email || '';
+            document.getElementById('kullaniciTelefon').value = u.telefon || '';
+            document.getElementById('kullaniciPassword').value = '';
+            document.getElementById('kullaniciRole').value = u.role || 'Kullanıcı';
+            document.getElementById('kullaniciDurum').value = u.durum || 'Aktif';
+
+            // Yetkileri yükle
+            let yetkiler = [];
+            try { yetkiler = JSON.parse(u.yetkiler || '[]'); } catch(e) { yetkiler = []; }
+            document.querySelectorAll('#yetkilerCheckboxes input[type="checkbox"]').forEach(cb => {
+                cb.checked = yetkiler.includes(cb.value);
+            });
+
+            openModal('kullaniciModal');
+        }
+
+        async function deleteKullanici(id) {
+            if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(API_BASE + '/users/' + id, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('Kullanıcı silindi!');
+                    loadKullanicilar();
+                }
+            } catch (error) {
+                showToast('Silme işlemi başarısız!', 'error');
+            }
+        }
+
+        // Lisans Yönetimi
+        async function loadLisans() {
+            try {
+                const response = await fetch('/api/licenses/' + licenseCode);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('lisansKodu').value = data.license_code || licenseCode;
+                    document.getElementById('lisansFirma').value = data.company_name || '-';
+                    document.getElementById('lisansPaket').value = data.paket_tipi || 'Standart';
+                    document.getElementById('lisansDurum').value = data.aktif ? 'Aktif' : 'Pasif';
+                    document.getElementById('lisansBaslangic').value = data.baslangic_tarihi ? new Date(data.baslangic_tarihi).toLocaleDateString('tr-TR') : '-';
+                    document.getElementById('lisansBitis').value = data.bitis_tarihi ? new Date(data.bitis_tarihi).toLocaleDateString('tr-TR') : '-';
+
+                    if (data.bitis_tarihi) {
+                        const today = new Date();
+                        const endDate = new Date(data.bitis_tarihi);
+                        const diffTime = endDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        document.getElementById('lisansKalan').value = diffDays > 0 ? diffDays + ' gün' : 'Süresi dolmuş';
+                    } else {
+                        document.getElementById('lisansKalan').value = '-';
+                    }
+                }
+            } catch (error) {
+                console.error('Lisans bilgisi alınamadı:', error);
+            }
+        }
+
+        // Export Functions
+        async function exportExcel(type) {
+            let data = [];
+            let filename = '';
+
+            switch(type) {
+                case 'musteriler':
+                    data = musterilerData.map(m => ({
+                        'Müşteri Kodu': m.musteri_kodu,
+                        'Tip': m.musteri_tipi,
+                        'Ad/Firma': m.musteri_tipi === 'Kurumsal' ? m.firma_adi : m.ad_soyad,
+                        'Telefon': m.telefon,
+                        'E-posta': m.email,
+                        'İl': m.il,
+                        'İlçe': m.ilce
+                    }));
+                    filename = 'musteriler';
+                    break;
+                case 'cihazlar':
+                    data = cihazlarData.map(c => ({
+                        'Müşteri': c.musteri_adi,
+                        'Cihaz Tipi': c.cihaz_tipi,
+                        'Marka': c.marka,
+                        'Model': c.model,
+                        'Seri No': c.seri_no,
+                        'Garanti Bitiş': c.garanti_bitis
+                    }));
+                    filename = 'cihazlar';
+                    break;
+                case 'isEmirleri':
+                    data = arizalarData.map(a => ({
+                        'İş Emri No': a.ariza_no,
+                        'Müşteri': a.musteri_adi,
+                        'Cihaz': a.cihaz_bilgisi,
+                        'Arıza Tipi': a.ariza_tipi,
+                        'Öncelik': a.oncelik,
+                        'Teknisyen': a.teknisyen_adi,
+                        'Randevu': a.randevu_tarihi,
+                        'Durum': a.durum
+                    }));
+                    filename = 'is_emirleri';
+                    break;
+                case 'teknisyenler':
+                    data = teknisyenlerData.map(t => ({
+                        'Ad Soyad': t.ad_soyad,
+                        'Telefon': t.telefon,
+                        'E-posta': t.email,
+                        'Uzmanlık': t.uzmanlik_alani,
+                        'Bölge': t.bolge,
+                        'Durum': t.durum
+                    }));
+                    filename = 'teknisyenler';
+                    break;
+                case 'parcalar':
+                    data = parcalarData.map(p => ({
+                        'Parça Kodu': p.parca_kodu,
+                        'Parça Adı': p.parca_adi,
+                        'Kategori': p.kategori,
+                        'Marka': p.marka,
+                        'Stok': p.stok_miktari,
+                        'Min Stok': p.min_stok,
+                        'Alış Fiyatı': p.alis_fiyati,
+                        'Satış Fiyatı': p.satis_fiyati
+                    }));
+                    filename = 'parcalar';
+                    break;
+                case 'faturalar':
+                    data = faturalarData.map(f => ({
+                        'Fatura No': f.fatura_no,
+                        'Müşteri': f.musteri_adi,
+                        'Tarih': f.fatura_tarihi,
+                        'İşçilik': f.iscilik_tutari,
+                        'Parça': f.parca_tutari,
+                        'Toplam': f.toplam_tutar,
+                        'Ödeme Durumu': f.odeme_durumu
+                    }));
+                    filename = 'faturalar';
+                    break;
+            }
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sayfa1');
+            XLSX.writeFile(wb, filename + '_' + new Date().toISOString().split('T')[0] + '.xlsx');
+            showToast('Excel dosyası indirildi!');
+        }
+
+        function exportPDF(type) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont('helvetica');
+            doc.setFontSize(18);
+            doc.text('Dijiser Servis - ' + type.charAt(0).toUpperCase() + type.slice(1), 14, 20);
+            doc.setFontSize(10);
+            doc.text('Tarih: ' + new Date().toLocaleDateString('tr-TR'), 14, 28);
+
+            doc.save(type + '_' + new Date().toISOString().split('T')[0] + '.pdf');
+            showToast('PDF dosyası indirildi!');
+        }
+
+        function printTable(type) {
+            const table = document.getElementById(type + 'Table');
+            if (!table) return;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Dijiser Servis - ${type}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background: #11998e; color: white; }
+                        tr:nth-child(even) { background: #f9f9f9; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Dijiser Servis - ${type.charAt(0).toUpperCase() + type.slice(1)}</h2>
+                    <p>Tarih: ${new Date().toLocaleDateString('tr-TR')}</p>
+                    ${table.outerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Utility Functions
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            // Reset form if exists
+            const form = document.querySelector('#' + id + ' form');
+            if (form) {
+                form.reset();
+                const hiddenId = form.querySelector('input[type="hidden"]');
+                if (hiddenId) hiddenId.value = '';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function formatNumber(num) {
+            return parseFloat(num || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('tr-TR');
+        }
+
+        // Close modal on outside click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
