@@ -3,6 +3,12 @@ import sqlite3
 import json
 from datetime import datetime
 import os
+from mailjet_rest import Client
+
+MJ_API_KEY = "SENİN_PUBLIC_KEYİN"
+MJ_SECRET_KEY = "SENİN_SECRET_KEYİN"
+
+mailjet = Client(auth=(MJ_API_KEY, MJ_SECRET_KEY), version='v3.1')
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
